@@ -17,8 +17,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-[#393E46]`}>
+    <html lang="en" suppressHydrationWarning={true}>
+      <link
+        rel="preload"
+        href="/foxy-optimized.glb"
+        as="fetch"
+        crossOrigin="anonymous"
+      ></link>
+      <body
+        className={`${inter.className} bg-[#393E46]`}
+        suppressHydrationWarning={true}
+      >
         {" "}
         {/* Ganti warna background body */}
         <Navbar /> {/* Letakkan Navbar di sini */}

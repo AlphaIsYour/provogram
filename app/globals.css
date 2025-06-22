@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Reset default styles dan prevent overflow */
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} */
+
+/* Specific styles untuk 3D viewer */
+.no-scroll {
+  overflow: hidden !important;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Prevent any canvas or div from causing overflow */
+canvas {
+  display: block;
+  outline: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Custom scrollbar untuk pages lain (bukan 3D viewer) */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Utility classes */
+.gradient-bg {
+  background: linear-gradient(135deg, #000428 0%, #004e92 70%, #a18cd1 100%);
+}
+
+.full-viewport {
+  width: 100vw;
+  height: 100vh;
+}
+
+.full-viewport-minus-nav {
+  width: 100vw;
+  height: calc(100vh - 64px); /* Adjust based on your navbar height */
 }
