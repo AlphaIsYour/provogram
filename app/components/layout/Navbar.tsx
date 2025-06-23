@@ -3,7 +3,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Menu, Bell, User, Search } from "lucide-react";
+// Hapus 'Bell' dari sini
+import { Menu, User, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -11,6 +12,9 @@ import LeftSidebar from "@/app/components/layout/LeftSidebar";
 import RightSidebar from "@/app/components/layout/RightSidebar";
 import SearchModal from "@/app/components/layout/SearchModal";
 import NotificationDropdown from "@/app/components/layout/NotificationDropdown";
+
+// Impor ikon kustom Anda
+import InboxIcon from "@/app/components/icons/InboxIcon";
 
 const Navbar = () => {
   const [isLeftSidebarOpen, setLeftSidebarOpen] = useState(false);
@@ -21,6 +25,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="bg-black text-white h-18 flex items-center justify-between px-2 md:px-6 sticky top-0 z-30 border-b border-b-gray-700">
+        {/* ... (kode bagian kiri tidak berubah) ... */}
         <div className="flex items-center gap-0.5">
           <button
             onClick={() => setLeftSidebarOpen(true)}
@@ -36,7 +41,9 @@ const Navbar = () => {
               alt="Logo"
               className="rounded-full object-cover"
             />
-            <span className="text-l font-bold hidden md:block">Dashboard</span>
+            <span className="text-gray-200 text-l font-bold hidden md:block">
+              Dashboard
+            </span>
           </Link>
         </div>
         <div className="flex items-center gap-4">
@@ -49,10 +56,11 @@ const Navbar = () => {
           </button>
           <div className="relative">
             <button
-              className="p-1 rounded-md border border-gray-700 hover:bg-gray-900"
+              className="p-2 rounded-md border border-gray-700 hover:bg-gray-900"
               onClick={() => setNotificationOpen(!isNotificationOpen)}
             >
-              <Bell size={24} className="text-gray-600" />
+              {/* GANTI <Bell /> DENGAN INI */}
+              <InboxIcon size={18} className="text-gray-500" />
             </button>
             {isNotificationOpen && (
               <NotificationDropdown
@@ -64,12 +72,12 @@ const Navbar = () => {
             onClick={() => setRightSidebarOpen(true)}
             className="p-1 rounded-full"
           >
-            <div className="w-10 h-10 bg-teal-500 rounded-full"></div>
+            <div className="w-10 h-10 bg-yellow-500 rounded-full"></div>
           </button>
         </div>
       </nav>
 
-      {/* Render komponen berdasarkan state */}
+      {/* ... (kode bagian bawah tidak berubah) ... */}
       <LeftSidebar
         isOpen={isLeftSidebarOpen}
         onClose={() => setLeftSidebarOpen(false)}

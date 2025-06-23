@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// app/components/Scene.tsx
 "use client";
 
 import { Suspense, useEffect, useState, useRef } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { useGLTF, OrbitControls, Environment, Bounds } from "@react-three/drei";
+import { useGLTF, Environment, Bounds } from "@react-three/drei";
 import * as THREE from "three";
 
 // Component untuk handle WebGL context recovery
@@ -49,7 +50,7 @@ function WebGLContextManager() {
   return null;
 }
 
-// Mouse tracker component
+// Mouse tracker component - tetap sama
 function MouseLookTarget({
   modelRef,
 }: {
@@ -191,11 +192,19 @@ export default function Scene() {
         // PENTING: Batasi memory usage
         failIfMajorPerformanceCaveat: false,
       }}
-      dpr={Math.min(window.devicePixelRatio, 1.5)} // Batasi pixel ratio
+      dpr={
+        typeof window !== "undefined"
+          ? Math.min(window.devicePixelRatio, 1.5)
+          : 1
+      } // Batasi pixel ratio
       performance={{ min: 0.5 }} // Allow lower performance
       onCreated={({ gl, scene, camera }) => {
         // Set conservative renderer settings
-        gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        gl.setPixelRatio(
+          typeof window !== "undefined"
+            ? Math.min(window.devicePixelRatio, 1.5)
+            : 1
+        );
         gl.outputColorSpace = THREE.SRGBColorSpace;
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = 0.8;
@@ -244,17 +253,7 @@ export default function Scene() {
         </Bounds>
       </Suspense>
 
-      <OrbitControls
-        makeDefault
-        enablePan={true}
-        enableZoom={true}
-        enableRotate={true}
-        maxDistance={8}
-        minDistance={2}
-        // Kurangi update frequency untuk save performance
-        enableDamping={true}
-        dampingFactor={0.05}
-      />
+      {/* OrbitControls dihapus! Sekarang model gak bisa diputar manual */}
     </Canvas>
   );
 }
