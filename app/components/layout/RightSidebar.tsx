@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useEffect } from "react";
@@ -20,6 +21,7 @@ import {
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
 
 interface RightSidebarProps {
   isOpen: boolean;
@@ -44,6 +46,7 @@ const NavItem = ({
 );
 
 const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
+  const { data: session, status } = useSession();
   useEffect(() => {
     // Efek ini sudah bagus, tidak perlu diubah
     if (isOpen) {
@@ -174,9 +177,15 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Footer (Sign Out) */}
         <div className="mt-auto pt-2 border-t border-gray-800 flex-shrink-0 px-1.5">
-          <NavItem icon={<LogOut size={16} className="text-gray-400" />}>
-            Sign out
-          </NavItem>
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="flex items-center gap-3 w-full text-left py-2 px-2.5 rounded-md hover:bg-gray-800 transition-colors"
+          >
+            <div className="w-5 flex justify-center">
+              <LogOut size={16} className="text-gray-400" />
+            </div>
+            <span className="font-medium text-gray-300 text-sm">Sign out</span>
+          </button>
         </div>
       </div>
     </>

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { LinkIcon } from "lucide-react";
 import { Post } from "./types";
 import Image from "next/image";
@@ -92,6 +91,9 @@ export default function ProjectPostContent({
                 #2c52b3,
                 #fb2f38,
                 #fff867,
+                #ffffff,
+                #ffffff,
+                #ffffff,
                 #ffffff,
                 #ffffff,
                 #ffffff,

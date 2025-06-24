@@ -2,7 +2,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/app/components/layout/Navbar";
+
+import AuthProvider from "@/app/components/providers/AuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,21 +19,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
-      <link
-        rel="preload"
-        href="/foxy-optimized.glb"
-        as="fetch"
-        crossOrigin="anonymous"
-      ></link>
-      <body
-        className={`${inter.className} bg-[#393E46]`}
-        suppressHydrationWarning={true}
-      >
-        {" "}
-        {/* Ganti warna background body */}
-        <Navbar /> {/* Letakkan Navbar di sini */}
-        <main>{children}</main>
-      </body>
+      <AuthProvider>
+        <link
+          rel="preload"
+          href="/foxy-optimized.glb"
+          as="fetch"
+          crossOrigin="anonymous"
+        ></link>
+        <body
+          className={`${inter.className} bg-[#393E46]`}
+          suppressHydrationWarning={true}
+        >
+          {" "}
+          {/* Ganti warna background body */}
+          <main>{children}</main>
+        </body>
+      </AuthProvider>
     </html>
   );
 }
