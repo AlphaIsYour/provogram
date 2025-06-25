@@ -115,10 +115,14 @@ function Model() {
       }
     });
 
+    // Copy the ref value at effect mount
+    const modelAtMount = modelRef.current;
+
     return () => {
       // Aggressive cleanup
-      if (modelRef.current) {
-        modelRef.current.traverse((child) => {
+      const model = modelAtMount;
+      if (model) {
+        model.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             if (child.geometry) child.geometry.dispose();
             if (child.material) {

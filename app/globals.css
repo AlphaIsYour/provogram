@@ -1,11 +1,20 @@
 @import "tailwindcss";
 
-/* Reset default styles dan prevent overflow */
-/* * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-} */
+@font-face {
+  font-family: "ASTERA";
+  src: url("/fonts/ASTERA.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "mona-sans";
+  src: url("/fonts/mona-sans.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* Specific styles untuk 3D viewer */
 .no-scroll {
