@@ -58,7 +58,25 @@ const TeamSection = () => {
     },
   ];
 
-  const itemsPerPage = 4;
+  // Responsive items per page
+  const [itemsPerPage, setItemsPerPage] = useState(4);
+
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth < 768) {
+        setItemsPerPage(1); // Mobile: 1 card
+      } else if (window.innerWidth < 1024) {
+        setItemsPerPage(2); // Tablet: 2 cards
+      } else {
+        setItemsPerPage(4); // Desktop: 4 cards
+      }
+    };
+
+    updateItemsPerPage();
+    window.addEventListener("resize", updateItemsPerPage);
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
+
   const originalLength = leaders.length;
 
   // 1. Array yang diperpanjang untuk ilusi infinity
@@ -70,6 +88,11 @@ const TeamSection = () => {
 
   const [currentIndex, setCurrentIndex] = useState(itemsPerPage);
   const [isTransitioning, setIsTransitioning] = useState(false); // Flag untuk proses "lompatan"
+
+  // Reset currentIndex when itemsPerPage changes
+  useEffect(() => {
+    setCurrentIndex(itemsPerPage);
+  }, [itemsPerPage]);
 
   const handleNext = () => {
     if (isTransitioning) return;
@@ -115,8 +138,8 @@ const TeamSection = () => {
 
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Meet Our Team</h2>
-          <p className="text-xl text-gray-300">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Meet Our Team</h2>
+          <p className="text-lg md:text-xl text-gray-300">
             Dedicated individuals working together for a stronger community.
           </p>
         </div>
@@ -125,11 +148,12 @@ const TeamSection = () => {
           {/* Tombol Navigasi */}
           <button
             onClick={handlePrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white text-black shadow-lg -translate-x-1/2"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-2 md:p-3 rounded-full bg-white text-black shadow-lg -translate-x-1/2"
           >
             <svg
-              width="24"
-              height="24"
+              width="20"
+              height="20"
+              className="md:w-6 md:h-6"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -145,11 +169,12 @@ const TeamSection = () => {
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white text-black shadow-lg translate-x-1/2"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-2 md:p-3 rounded-full bg-white text-black shadow-lg translate-x-1/2"
           >
             <svg
-              width="24"
-              height="24"
+              width="20"
+              height="20"
+              className="md:w-6 md:h-6"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -165,7 +190,7 @@ const TeamSection = () => {
           </button>
 
           {/* Jendela Carousel */}
-          <div className="overflow-hidden">
+          <div className="overflow-hidden px-8 md:px-0">
             <motion.div
               className="flex" // Gunakan flex, bukan grid
               // Animasikan posisi x berdasarkan index saat ini
@@ -183,10 +208,10 @@ const TeamSection = () => {
                 // 5. Layout anti-potong
                 <div
                   key={`${leader.id}-${index}`}
-                  className="flex-shrink-0 w-full px-4 group"
+                  className="flex-shrink-0 w-full px-2 md:px-4 group"
                   style={{ flexBasis: `${100 / itemsPerPage}%` }}
                 >
-                  <div className="relative text-center border border-gray-700 rounded-3xl overflow-hidden h-[235px] shadow-md w-full">
+                  <div className="relative text-center border border-gray-700 rounded-2xl md:rounded-3xl overflow-hidden h-[280px] md:h-[235px] shadow-md w-full">
                     <Image
                       width={300}
                       height={300}
@@ -200,25 +225,27 @@ const TeamSection = () => {
 
                     {/* Default content - hidden on hover */}
                     <div className="absolute bottom-0 p-4 w-full z-10 transition-opacity duration-300 group-hover:opacity-0">
-                      <h3 className="text-xl font-semibold text-white">
+                      <h3 className="text-lg md:text-xl font-semibold text-white">
                         {leader.name}
                       </h3>
-                      <p className="text-blue-200 font-medium">{leader.role}</p>
+                      <p className="text-sm md:text-base text-blue-200 font-medium">
+                        {leader.role}
+                      </p>
                     </div>
 
                     {/* Hover content - visible on hover */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
-                      <h3 className="text-2xl font-bold text-white mb-4 text-center px-4">
+                      <h3 className="text-xl md:text-2xl font-bold text-white mb-4 text-center px-4">
                         {leader.name}
                       </h3>
                       <a
                         href={leader.linkedin || "#"} // Gunakan leader.linkedin jika ada, atau tambahkan field ini
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 flex items-center gap-2"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 md:px-6 rounded-lg transition-colors duration-200 flex items-center gap-2 text-sm md:text-base"
                       >
                         <svg
-                          className="w-5 h-5"
+                          className="w-4 h-4 md:w-5 md:h-5"
                           fill="currentColor"
                           viewBox="0 0 24 24"
                         >

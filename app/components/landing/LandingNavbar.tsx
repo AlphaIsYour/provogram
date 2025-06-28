@@ -13,7 +13,7 @@ export default function LandingNavbar() {
       const heroSection = document.getElementById("hero");
       if (heroSection) {
         const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
-        setScrolled(window.scrollY > heroBottom - 720);
+        setScrolled(window.scrollY > heroBottom - 1760);
       }
     };
 
@@ -27,9 +27,10 @@ export default function LandingNavbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full text-white p-4 z-50 transition-all duration-800 ${
+      className={`fixed top-0 left-0 w-full text-white p-2 px-10 z-50 transition-all duration-800 ${
         scrolled ? "bg-[#0D1117]/95 backdrop-blur-md" : "bg-transparent"
       }`}
+      style={{ fontFamily: "mona-sans" }}
     >
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo Section */}
@@ -43,7 +44,7 @@ export default function LandingNavbar() {
               className="object-contain"
             />
           </div>
-          <span className="text-xl font-semibold tracking-tight">
+          <span className="text-lg font-semibold tracking-tight">
             Provogram
           </span>
         </div>
@@ -75,7 +76,7 @@ export default function LandingNavbar() {
           {/* Join Button with Google Sign In */}
           <button
             onClick={handleJoinClick}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gray-800 hover:bg-gray-900 border border-gray-500 text-white text-sm font-semibold rounded-lg transition-all duration-400 shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 px-2.5 py-1.5 bg-gray-800 hover:bg-gray-900 border border-gray-500 text-white text-[12px]  rounded-lg transition-all duration-400 shadow-lg hover:shadow-xl"
           >
             <LogIn size={16} />
             Bergabung
@@ -86,7 +87,7 @@ export default function LandingNavbar() {
         <div className="md:hidden">
           <button
             onClick={handleJoinClick}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-semibold rounded-lg transition-all duration-200"
+            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 border border-gray-500 text-white text-[12px]  rounded-lg transition-all duration-400 shadow-lg hover:shadow-xl"
           >
             <LogIn size={14} />
             Bergabung

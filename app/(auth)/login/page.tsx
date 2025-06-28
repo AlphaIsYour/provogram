@@ -1,8 +1,13 @@
+"use client";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 
 export default function LoginPage() {
   return (
-    <div className="flex items-center justify-center h-screen bg-[#0D1117]">
+    <div
+      className="flex items-center justify-center h-screen bg-[#0D1117]"
+      style={{ fontFamily: "mona-sans" }}
+    >
       <div className="flex flex-col items-center">
         <div className="w-24 h-24 mb-8 flex items-center justify-center">
           <Image
@@ -13,7 +18,7 @@ export default function LoginPage() {
             className="rounded-full"
           />
         </div>
-        <div className="bg-gray-900 p-8 border-2 border-gray-500 rounded-lg shadow-md w-96">
+        <div className="bg-[#151B23] p-8 border-2 border-gray-500 rounded-lg shadow-md w-96">
           <h2 className="text-2xl text-white font-bold mb-6 text-center">
             Login
           </h2>
@@ -28,7 +33,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 id="email"
-                className="w-full px-3 py-2 bg-black border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-[#0D1117] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -42,17 +47,29 @@ export default function LoginPage() {
               <input
                 type="password"
                 id="password"
-                className="w-full px-3 py-2 bg-black border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-[#0D1117] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200"
+              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
             >
               Login
             </button>
           </form>
+        </div>
+        <div className="bg-[#151B23] mt-5 p-8 border-2 border-gray-500 rounded-lg shadow-md w-96">
+          <h2 className="text-2xl text-white font-bold mb-6 text-center">
+            Atau
+          </h2>
+          <button
+            onClick={() => signIn("google", { callbackUrl: "/" })}
+            className="w-full bg-[#0D1117] border border-gray-600 text-white py-2 rounded-lg flex items-center justify-center gap-2"
+          >
+            <Image src="/google.png" alt="Google Icon" width={24} height={24} />
+            Login dengan Google
+          </button>
         </div>
       </div>
     </div>

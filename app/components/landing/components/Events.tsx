@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React, { useState, useEffect, useRef } from "react";
@@ -8,7 +9,7 @@ const Events = () => {
   const sliderData = [
     {
       id: 1,
-      image: "/events/img1.png",
+      image: "/events/img1.jpg",
       category: "design",
       title: "Event 01",
       description:
@@ -126,7 +127,7 @@ const Events = () => {
   }, [itemActive]);
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       {/* Slider */}
       <div className="relative h-screen -mt-16 overflow-hidden bg-black border-t border-gray-500">
         {/* Slider Items */}
@@ -146,9 +147,11 @@ const Events = () => {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-              <div className="absolute left-[10%] top-[20%] w-[500px] max-w-[80%] z-20 text-white">
+
+              {/* Content - Responsive positioning and sizing */}
+              <div className="absolute left-[5%] sm:left-[10%] top-[20%] sm:top-[20%] w-[90%] sm:w-[500px] max-w-[90%] sm:max-w-[80%] z-20 text-white px-4 sm:px-0">
                 <p
-                  className={`uppercase tracking-[10px] text-sm mb-4 transform transition-all duration-500 ${
+                  className={`uppercase tracking-[2px] sm:tracking-[10px] text-xs sm:text-sm mb-2 sm:mb-4 transform transition-all duration-500 ${
                     index === itemActive
                       ? "translate-y-0 blur-0 opacity-100 animate-[showContent_0.5s_0.7s_ease-in-out_forwards]"
                       : "translate-y-8 blur-md opacity-0"
@@ -157,7 +160,7 @@ const Events = () => {
                   {item.category}
                 </p>
                 <h2
-                  className={`text-6xl md:text-8xl font-bold mb-4 m-0 transform transition-all duration-500 ${
+                  className={`text-3xl sm:text-6xl md:text-8xl font-bold mb-2 sm:mb-4 m-0 leading-tight transform transition-all duration-500 ${
                     index === itemActive
                       ? "translate-y-0 blur-0 opacity-100 animate-[showContent_0.5s_1s_ease-in-out_forwards]"
                       : "translate-y-8 blur-md opacity-0"
@@ -166,7 +169,7 @@ const Events = () => {
                   {item.title}
                 </h2>
                 <p
-                  className={`text-base leading-relaxed transform transition-all duration-[1.3s] ${
+                  className={`text-sm sm:text-base leading-relaxed transform transition-all duration-[1.3s] ${
                     index === itemActive
                       ? "translate-y-0 blur-0 opacity-100 animate-[showContent_1.3s_0.7s_ease-in-out_forwards]"
                       : "translate-y-8 blur-md opacity-0"
@@ -179,32 +182,32 @@ const Events = () => {
           ))}
         </div>
 
-        {/* Arrow Buttons */}
-        <div className="absolute top-[30%] right-12 z-30 flex flex-col gap-2">
+        {/* Arrow Buttons - Responsive positioning and sizing */}
+        <div className="absolute top-1/2 right-0 z-30 flex flex-row justify-between items-center px-4 sm:px-12 pointer-events-none">
           <button
             onClick={handlePrev}
-            className="bg-white/30 border-none font-mono w-10 h-10 rounded text-white text-xl hover:bg-white hover:text-black transition-all duration-300"
+            className="bg-white/30 border-none font-mono w-8 h-8 sm:w-10 sm:h-10 mr-1 sm:mr-2 rounded text-white text-base sm:text-xl hover:bg-white hover:text-black transition-all duration-300 pointer-events-auto"
           >
             &lt;
           </button>
           <button
             onClick={handleNext}
-            className="bg-white/30 border-none font-mono w-10 h-10 rounded text-white text-xl hover:bg-white hover:text-black transition-all duration-300"
+            className="bg-white/30 border-none font-mono w-8 h-8 sm:w-10 sm:h-10 rounded text-white text-base sm:text-xl hover:bg-white hover:text-black transition-all duration-300 pointer-events-auto"
           >
             &gt;
           </button>
         </div>
 
-        {/* Thumbnails */}
+        {/* Thumbnails - Responsive layout */}
         <div
           ref={thumbnailRef}
-          className="absolute bottom-12 left-0 right-0 z-20 flex gap-3 h-56 px-12 overflow-x-auto overflow-y-hidden justify-start scrollbar-hide"
+          className="absolute bottom-4 sm:bottom-12 left-0 right-0 z-20 flex gap-2 sm:gap-3 h-32 sm:h-56 px-4 sm:px-12 overflow-x-auto overflow-y-hidden justify-start scrollbar-hide"
         >
           {sliderData.map((item, index) => (
             <div
               key={item.id}
               onClick={() => handleThumbnailClick(index)}
-              className={`w-36 h-52 flex-shrink-0 cursor-pointer transition-all duration-300 relative ${
+              className={`w-20 sm:w-36 h-28 sm:h-52 flex-shrink-0 cursor-pointer transition-all duration-300 relative ${
                 index === itemActive ? "brightness-150" : "brightness-50"
               }`}
             >
@@ -213,7 +216,7 @@ const Events = () => {
                 alt={item.thumbnailTitle}
                 className="w-full h-full object-cover rounded-lg"
               />
-              <div className="absolute bottom-2 left-2 right-2 text-white text-sm">
+              <div className="absolute bottom-1 sm:bottom-2 left-1 sm:left-2 right-1 sm:right-2 text-white text-xs sm:text-sm">
                 {item.thumbnailTitle}
               </div>
             </div>
@@ -235,6 +238,13 @@ const Events = () => {
         }
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
+        }
+
+        /* Additional mobile optimizations */
+        @media (max-width: 640px) {
+          .animate-showContent {
+            animation-duration: 0.3s;
+          }
         }
       `}</style>
     </div>
