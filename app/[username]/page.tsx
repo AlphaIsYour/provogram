@@ -6,11 +6,10 @@ import Image from "next/image";
 import Navbar from "@/app/components/layout/Navbar"; // Atau taruh di layout jika perlu
 
 // 'params' akan berisi segmen dinamis dari URL, yaitu { username: 'Yoralph' }
-export default async function ProfilePage({
-  params,
-}: {
+export default async function ProfilePage(props: {
   params: { username: string };
 }) {
+  const params = await props.params;
   // 1. Ambil data user dari database berdasarkan username di URL
   const user = await prisma.user.findUnique({
     where: {

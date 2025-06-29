@@ -1,6 +1,7 @@
 "use client";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function LoginPage() {
   return (
@@ -60,6 +61,12 @@ export default function LoginPage() {
           </form>
         </div>
         <div className="bg-[#151B23] mt-5 p-8 border-2 border-gray-500 rounded-lg shadow-md w-96">
+          <p className="text-white text-sm mb-4 text-center">
+            Belum punya akun?{" "}
+            <Link className="text-blue-600" href="/signup">
+              Daftar sekarang!
+            </Link>
+          </p>
           <h2 className="text-2xl text-white font-bold mb-6 text-center">
             Atau
           </h2>

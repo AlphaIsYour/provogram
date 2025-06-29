@@ -1,11 +1,11 @@
 // app/page.tsx
 "use client";
 
-import Scene from "@/app/components/Scene";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PostCard from "@/app/components/posts/PostCard";
 import { Post } from "@/app/components/posts/types";
 import Navbar from "@/app/components/layout/Navbar";
+import GlowbotCanvas from "@/app/components/landing/components/Glowbot";
 // Pindahkan data dummy ke dalam sebuah array
 const postsData: Post[] = [
   {
@@ -102,16 +102,10 @@ export default function Home() {
         </div>
 
         {/* Container untuk 3D Model (di pojok kiri bawah, lebih kecil) */}
-        <div className="fixed bottom-2 left-2 w-58 h-58 z-20 pointer-events-auto">
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center h-full text-white">
-                Loading...
-              </div>
-            }
-          >
-            <Scene />
-          </Suspense>
+        <div className="fixed -bottom-10 left-2 w-58 h-58 z-20 pointer-events-auto">
+          <div className="w-full h-[25vh]">
+            <GlowbotCanvas />
+          </div>
         </div>
       </div>
     </>

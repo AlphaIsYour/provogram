@@ -59,3 +59,87 @@ canvas {
   width: 100vw;
   height: calc(100vh - 64px); /* Adjust based on your navbar height */
 }
+
+/* Custom Styles for React Big Calendar with GitHub Dark Theme */
+
+/* Container */
+.rbc-calendar {
+  background-color: #161b22;
+  color: #c9d1d9;
+}
+
+/* Toolbar (Navigasi Bulan/Minggu) */
+.rbc-toolbar {
+  margin-bottom: 1rem;
+}
+.rbc-toolbar button {
+  color: #c9d1d9;
+  border: 1px solid #30363d !important;
+  background-color: #21262d !important;
+  transition: background-color 0.2s;
+}
+.rbc-toolbar button:hover,
+.rbc-toolbar button:focus {
+  background-color: #30363d !important;
+  color: white;
+}
+.rbc-toolbar button.rbc-active {
+  background-color: #58a6ff !important;
+  border-color: #58a6ff !important;
+  color: #0d1117 !important;
+  font-weight: bold;
+}
+.rbc-toolbar-label {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+}
+
+/* Header Hari (Sen, Sel, Rab...) */
+.rbc-header {
+  border-bottom: 1px solid #30363d;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  color: #8b949e;
+}
+
+/* Kotak-kotak tanggal */
+.rbc-month-view,
+.rbc-time-view,
+.rbc-agenda-view {
+  border: 1px solid #30363d;
+}
+.rbc-day-bg {
+  border-left: 1px solid #30363d;
+}
+.rbc-day-bg:first-child {
+  border-left: none;
+}
+.rbc-off-range-bg {
+  background-color: #0d1117; /* Tanggal di luar bulan ini */
+}
+.rbc-today {
+  background-color: #1f6feb20; /* Highlight tanggal hari ini */
+}
+
+/* Event Items */
+.rbc-event {
+  background-color: #58a6ff;
+  border: 1px solid #58a6ff;
+  border-radius: 4px;
+  padding: 2px 5px;
+  color: #0d1117;
+  font-weight: 600;
+}
+.rbc-event:focus {
+  outline: 2px solid #58a6ff;
+}
+
+/* Tombol "Show More" */
+.rbc-show-more {
+  color: #58a6ff;
+  background-color: transparent;
+}
+.rbc-show-more:hover {
+  color: #9ecaff;
+}

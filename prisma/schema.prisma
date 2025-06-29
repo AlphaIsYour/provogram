@@ -47,6 +47,9 @@ model Session {
 model User {
   id            String    @id @default(cuid())
   name          String?
+  username      String?   @unique // Tambahan kita untuk Provogram
+  password      String?   // Tambahan kita untuk Provogram
+  imageUrl      String?   // Tambahan kita untuk Provogram
   email         String?   @unique
   emailVerified DateTime?
   image         String?
@@ -66,6 +69,8 @@ model VerificationToken {
 
 // Enum untuk role user
 enum UserRole {
-  USER
+  SUPERADMIN
   ADMIN
+  MENTOR
+  USER
 }

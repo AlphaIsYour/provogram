@@ -7,10 +7,11 @@ import prisma from "./prisma";
 // Extend NextAuth types to include 'id' in session.user and user
 declare module "next-auth" {
   interface Session {
-    user?: DefaultSession["user"] & { id?: string };
+    user: DefaultSession["user"] & { id?: string; username?: string };
   }
   interface User extends DefaultUser {
     id: string;
+    username?: string;
   }
 }
 
@@ -31,22 +32,24 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
 
-  // Callback untuk menambahkan info custom (seperti ID user) ke session
   callbacks: {
     async session({ session, token }) {
-      if (token) {
-        if (session.user) {
-          session.user.id = typeof token.id === "string" ? token.id : undefined;
-        }
-        // Jika kamu menambahkan role di skema, bisa juga ditambahkan di sini
-        // session.user.role = token.role;
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.username = token.username as string; // Tambahkan username ke session
       }
       return session;
     },
     async jwt({ token, user }) {
+      // Pada saat sign-in awal, 'user' object tersedia
       if (user) {
         token.id = user.id;
-        // token.role = user.role;
+        // Ambil username dari 'user' object yang didapat dari database
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { email: true, username: true }, // Include 'username' in the selected fields
+        });
+        token.username = dbUser?.username;
       }
       return token;
     },

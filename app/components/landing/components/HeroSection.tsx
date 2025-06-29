@@ -100,7 +100,7 @@ const HeroSection = () => {
   const scrollProgress = Math.min(scrollY / maxScroll, 1);
   const heroScale = 1 - scrollProgress * 0.05;
   const heroOpacity = 1 - scrollProgress * 1.5;
-  const glassOpacity = Math.min(0.3 + scrollProgress * 0.7, 1);
+  const glassOpacity = Math.min(0.5 + scrollProgress * 0.7, 1);
 
   return (
     <main

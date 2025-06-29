@@ -22,7 +22,7 @@ export default function LandingNavbar() {
   }, []);
 
   const handleJoinClick = () => {
-    signIn("google", { callbackUrl: "/" });
+    signIn("google", { callbackUrl: "/login" });
   };
 
   return (
