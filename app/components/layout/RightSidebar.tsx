@@ -78,9 +78,6 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
           isOpen ? "translate-x-0" : "translate-x-full"
         } rounded-tl-xl rounded-bl-xl border-l border-gray-700 flex flex-col`}
       >
-        {/* ======================================= */}
-        {/* BAGIAN HEADER YANG DIPERBAIKI */}
-        {/* ======================================= */}
         <div className="flex justify-between items-center mb-4 flex-shrink-0 px-2.5">
           <div
             className={`flex items-center gap-3 ${
@@ -145,7 +142,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
             )}
             {/* NavItem lainnya bisa kamu sesuaikan/hapus sesuai kebutuhan */}
             <NavItem icon={<Book size={16} className="text-gray-400" />}>
-              Your repositories
+              Classroom
             </NavItem>
             <NavItem icon={<Github size={16} className="text-gray-400" />}>
               Your Copilot

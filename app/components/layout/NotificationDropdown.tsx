@@ -3,7 +3,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { GitBranch, MessageSquare, UserPlus } from "lucide-react";
-
+import Link from "next/link";
 interface NotificationDropdownProps {
   onClose: () => void;
 }
@@ -74,9 +74,12 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         </div>
       </div>
       <div className="p-2 text-center border-t border-gray-700">
-        <a href="/notifikasi" className="text-sm text-sky-400 hover:underline">
+        <Link
+          href="/notifikasi"
+          className="text-sm text-sky-400 hover:underline"
+        >
           Lihat Semua Notifikasi
-        </a>
+        </Link>
       </div>
     </div>
   );

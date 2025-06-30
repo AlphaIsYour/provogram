@@ -1,4 +1,4 @@
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Users } from "lucide-react";
 
 // Fungsi simulasi fetch data siswa
 const getStudentsInClass = async (slug: string) => {
@@ -37,43 +37,76 @@ const getStudentsInClass = async (slug: string) => {
   ];
 };
 
-const ClassStudentPage = async ({ params }: { params: { slug: string } }) => {
-  const students = await getStudentsInClass(params.slug);
+const ClassStudentPage = async ({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) => {
+  // Await the params Promise
+  const { slug } = await params;
+  const students = await getStudentsInClass(slug);
   const userRole = "mentor"; // Asumsi role mentor
 
   return (
-    <div className="bg-[#0D1117]">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">
-          Daftar Siswa ({students.length})
-        </h2>
-      </div>
+    <div className="min-h-screen">
+      <div className="max-w-8xl mx-auto sm:px-2 lg:px-4 py-2">
+        {/* Header Section */}
+        <div className="mb-6">
+          <h1 className="text-lg font-bold text-white">Daftar Siswa</h1>
+          <p className="text-sm text-slate-400 mt-1 flex items-center gap-1.5">
+            <Users size={14} />
+            <span>{students.length} siswa terdaftar</span>
+          </p>
+        </div>
 
-      <div className="border border-[#30363D] rounded-lg">
-        {students.map((student, index) => (
-          <div
-            key={student.id}
-            className={`flex items-center justify-between p-4 ${
-              index < students.length - 1 ? "border-b border-[#30363D]" : ""
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              {/* <img src={student.avatar} alt={student.name} className="w-10 h-10 rounded-full" /> */}
-              <div>
-                <p className="font-semibold text-white">{student.name}</p>
-                <p className="text-sm text-[#8B949E]">
-                  Bergabung pada {student.joinDate}
-                </p>
+        {/* Students List */}
+        <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
+          <div className="divide-y divide-slate-800">
+            {students.map((student) => (
+              <div
+                key={student.id}
+                className="group relative p-4 sm:p-5 hover:bg-slate-800/30 transition-all duration-200"
+              >
+                <div className="flex items-center justify-between">
+                  {/* Student Info */}
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    {/* Avatar Placeholder */}
+                    <div className="w-10 h-10 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-slate-300 font-medium text-sm">
+                        {student.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()}
+                      </span>
+                    </div>
+
+                    {/* Student Details */}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-white text-sm group-hover:text-slate-100 transition-colors duration-200">
+                        {student.name}
+                      </p>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Bergabung pada {student.joinDate}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  {userRole === "mentor" && (
+                    <button className="flex items-center justify-center w-8 h-8 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors duration-200">
+                      <MoreVertical size={16} />
+                      {/* Di sini bisa trigger dropdown menu: "Lihat Progress", "Keluarkan dari Kelas", dll */}
+                    </button>
+                  )}
+                </div>
+
+                {/* Hover indicator */}
+                <div className="absolute inset-y-0 left-0 w-0.5 bg-slate-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
               </div>
-            </div>
-            {userRole === "mentor" && (
-              <button className="text-[#8B949E] hover:text-white p-2 rounded-full hover:bg-[#21262D]">
-                <MoreVertical size={20} />
-                {/* Di sini bisa trigger dropdown menu: "Lihat Progress", "Keluarkan dari Kelas", dll */}
-              </button>
-            )}
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

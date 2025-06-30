@@ -19,10 +19,14 @@ import InboxIcon from "@/app/components/icons/InboxIcon";
 // Profile tabs data
 const profileTabs = [
   { name: "Overview", href: "" },
-  { name: "Repositories", href: "/repositories" },
+  { name: "Skills", href: "/skills" },
   { name: "Projects", href: "/projects" },
-  { name: "Packages", href: "/packages" },
-  { name: "Stars", href: "/stars" },
+  { name: "Experience", href: "/experience" },
+  { name: "Education", href: "/education" },
+  { name: "Achievements", href: "/achievements" },
+  { name: "Certs", href: "/certs" },
+  { name: "Contact", href: "/contact" },
+  { name: "Setting", href: "/setting" },
 ];
 
 const Navbar = () => {
