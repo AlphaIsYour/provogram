@@ -18,7 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning={true}>
+    <html
+      lang="en"
+      suppressHydrationWarning={true}
+      style={{ fontFamily: "mona-sans" }}
+    >
       <AuthProvider>
         <link
           rel="preload"

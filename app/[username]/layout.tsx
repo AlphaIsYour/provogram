@@ -18,7 +18,10 @@ export default async function ProfileLayout({
   return (
     <>
       <Navbar />
-      <div className="bg-[#0D1117] min-h-screen text-white">
+      <div
+        className="bg-[#0D1117] min-h-screen text-white"
+        style={{ fontFamily: "mona-sans" }}
+      >
         {/* Main Content */}
         <div className="container mx-auto px-4 py-8">{children}</div>
       </div>

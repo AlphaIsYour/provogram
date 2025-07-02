@@ -5,12 +5,12 @@ import {
   X,
   Book,
   User,
-  Github,
   LayoutGrid,
   Star,
-  FileText,
+  Github,
   Settings,
   LogOut,
+  ChartBar,
   // Hapus import yang tidak digunakan untuk membersihkan kode
   // Building, Briefcase, Heart, Rocket, Globe, LifeBuoy, Users
 } from "lucide-react";
@@ -141,11 +141,19 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
               </NavItem>
             )}
             {/* NavItem lainnya bisa kamu sesuaikan/hapus sesuai kebutuhan */}
-            <NavItem icon={<Book size={16} className="text-gray-400" />}>
+            <NavItem
+              icon={<Book size={16} className="text-gray-400" />}
+              href="/classroom"
+              onClick={onClose}
+            >
               Classroom
             </NavItem>
-            <NavItem icon={<Github size={16} className="text-gray-400" />}>
-              Your Copilot
+            <NavItem
+              icon={<ChartBar size={16} className="text-gray-400" />}
+              href="/leaderboard"
+              onClick={onClose}
+            >
+              Leaderboard
             </NavItem>
             <NavItem icon={<LayoutGrid size={16} className="text-gray-400" />}>
               Your projects
@@ -153,8 +161,8 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
             <NavItem icon={<Star size={16} className="text-gray-400" />}>
               Your stars
             </NavItem>
-            <NavItem icon={<FileText size={16} className="text-gray-400" />}>
-              Your gists
+            <NavItem icon={<Github size={16} className="text-gray-400" />}>
+              Your Github
             </NavItem>
           </nav>
 

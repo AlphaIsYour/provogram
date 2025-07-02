@@ -200,12 +200,12 @@ export default async function ProfilePage({
                   className="rounded-full border-2 border-gray-700 mb-4"
                 />
                 {/* Learning Streak Badge */}
-                <div className="absolute -bottom-2 -right-2 bg-orange-500 text-white rounded-full p-2 border-2 border-[#161B22]">
-                  <Flame className="w-4 h-4" />
+                <div className="absolute top-[12vh] right-[1vh] bg-orange-500 text-white rounded-full p-1.5 border-2 border-[#161B22]">
+                  <Flame className="w-5 h-5" />
                 </div>
               </div>
-              <h1 className="text-2xl font-bold text-center">{user.name}</h1>
-              <p className="text-gray-400 text-lg">@{user.username}</p>
+              <h1 className="text-xl font-bold text-center">{user.name}</h1>
+              <p className="text-gray-400 text-sm">@{user.username}</p>
               <div className="flex items-center mt-2 text-orange-400">
                 <Flame className="w-4 h-4 mr-1" />
                 <span className="font-semibold">
@@ -222,7 +222,7 @@ export default async function ProfilePage({
 
             {/* Bio */}
             <div className="mb-6">
-              <p className="text-gray-300 leading-relaxed">
+              <p className="text-gray-300 text-2sm leading-relaxed">
                 🚀 Full-stack developer & mentor passionate about teaching and
                 building amazing web experiences. Always learning, always
                 sharing knowledge!
@@ -246,7 +246,7 @@ export default async function ProfilePage({
             </div>
 
             {/* Info */}
-            <div className="space-y-3 mb-6">
+            <div className="space-y-3 mb-6 text-sm">
               <div className="flex items-center text-gray-300">
                 <Building className="w-4 h-4 mr-2" />
                 <span>Senior Developer @TechCorp</span>
@@ -258,7 +258,7 @@ export default async function ProfilePage({
               <div className="flex items-center text-gray-300">
                 <LinkIcon className="w-4 h-4 mr-2" />
                 <a href="#" className="text-blue-400 hover:underline">
-                  portfolio.dev
+                  youralpha.com
                 </a>
               </div>
               <div className="flex items-center text-gray-300">

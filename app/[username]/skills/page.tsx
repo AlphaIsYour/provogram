@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // app/[username]/skills/page.tsx
 
@@ -35,18 +36,54 @@ import {
   CheckCircle2,
   Clock,
 } from "lucide-react";
+import { ProfessionalSkill, SkillCategory, User } from "@prisma/client"; // Import tipe
 
+// ==================================
+// HELPER FUNCTIONS (Logika Tampilan)
+// ==================================
+const iconMap: { [key: string]: React.ComponentType<any> } = {
+  Monitor,
+  Server,
+  Database,
+  Cloud,
+  Palette,
+  Smartphone,
+  Trophy,
+  Award,
+  Users,
+  GitBranch,
+};
+
+const getIconComponent = (
+  iconName: string | null | undefined
+): React.ComponentType<any> => {
+  if (!iconName) return Brain;
+  return iconMap[iconName as string] || Brain;
+};
+
+// ==================================
+// KOMPONEN UTAMA
+// ==================================
 export default async function SkillsPage({
   params,
 }: {
-  params: Promise<{ username: string }>;
+  params: { username: string };
 }) {
-  // Await the params Promise
   const { username } = await params;
 
+  // 1. Fetch User dan relasi penting lainnya
   const user = await prisma.user.findUnique({
-    where: {
-      username: username,
+    where: { username: username },
+    include: {
+      // Ambil relasi ini untuk bagian bawah halaman
+      learningGoals: { orderBy: { progress: "desc" } },
+      userAchievements: {
+        where: { earnedAt: { not: null } },
+        orderBy: { earnedAt: "desc" },
+        take: 4,
+        include: { achievement: true },
+      },
+      certificates: { orderBy: { completionDate: "desc" }, take: 4 },
     },
   });
 
@@ -54,179 +91,46 @@ export default async function SkillsPage({
     notFound();
   }
 
-  const skillCategories = [
-    {
-      title: "Frontend Development",
-      icon: Monitor,
-      color: "from-blue-600 to-cyan-600",
-      skills: [
-        { name: "React", level: 95, years: 4, projects: 45, icon: "⚛️" },
-        { name: "Next.js", level: 90, years: 3, projects: 28, icon: "▲" },
-        { name: "TypeScript", level: 88, years: 3, projects: 35, icon: "📘" },
-        { name: "JavaScript", level: 95, years: 5, projects: 60, icon: "🟨" },
-        { name: "Tailwind CSS", level: 92, years: 3, projects: 40, icon: "🎨" },
-        { name: "HTML5/CSS3", level: 98, years: 6, projects: 80, icon: "🌐" },
-        { name: "Vue.js", level: 75, years: 2, projects: 12, icon: "💚" },
-        { name: "Sass/SCSS", level: 85, years: 4, projects: 25, icon: "🎨" },
-      ],
+  // 2. Query terpisah untuk Skill Categories, yang di-include ProfessionalSkill milik user ini
+  const skillCategories = await prisma.skillCategory.findMany({
+    orderBy: { order: "asc" },
+    include: {
+      skills: {
+        where: { userId: user.id, type: "TECHNICAL" },
+        orderBy: { proficiency: "desc" },
+      },
     },
-    {
-      title: "Backend Development",
-      icon: Server,
-      color: "from-green-600 to-emerald-600",
-      skills: [
-        { name: "Node.js", level: 90, years: 4, projects: 35, icon: "🟢" },
-        { name: "Express.js", level: 88, years: 4, projects: 30, icon: "🚀" },
-        { name: "Python", level: 82, years: 3, projects: 20, icon: "🐍" },
-        { name: "Django", level: 78, years: 2, projects: 15, icon: "🎸" },
-        { name: "REST APIs", level: 92, years: 4, projects: 40, icon: "🔗" },
-        { name: "GraphQL", level: 75, years: 2, projects: 10, icon: "📊" },
-        { name: "Prisma ORM", level: 85, years: 2, projects: 18, icon: "🔺" },
-        { name: "Socket.io", level: 80, years: 2, projects: 8, icon: "⚡" },
-      ],
-    },
-    {
-      title: "Database & Storage",
-      icon: Database,
-      color: "from-purple-600 to-pink-600",
-      skills: [
-        { name: "PostgreSQL", level: 88, years: 3, projects: 25, icon: "🐘" },
-        { name: "MongoDB", level: 85, years: 3, projects: 22, icon: "🍃" },
-        { name: "Redis", level: 75, years: 2, projects: 12, icon: "🔴" },
-        { name: "MySQL", level: 82, years: 4, projects: 20, icon: "🐬" },
-        { name: "Firebase", level: 80, years: 2, projects: 15, icon: "🔥" },
-        { name: "Supabase", level: 78, years: 1, projects: 8, icon: "⚡" },
-      ],
-    },
-    {
-      title: "DevOps & Tools",
-      icon: Cloud,
-      color: "from-orange-600 to-red-600",
-      skills: [
-        { name: "Docker", level: 82, years: 2, projects: 18, icon: "🐳" },
-        { name: "AWS", level: 78, years: 2, projects: 15, icon: "☁️" },
-        { name: "Vercel", level: 90, years: 3, projects: 30, icon: "▲" },
-        { name: "Git/GitHub", level: 95, years: 5, projects: 100, icon: "🐙" },
-        { name: "CI/CD", level: 75, years: 2, projects: 12, icon: "🔄" },
-        { name: "Nginx", level: 70, years: 1, projects: 8, icon: "🟢" },
-      ],
-    },
-    {
-      title: "Design & UI/UX",
-      icon: Palette,
-      color: "from-pink-600 to-rose-600",
-      skills: [
-        { name: "Figma", level: 85, years: 3, projects: 25, icon: "🎨" },
-        { name: "Adobe XD", level: 75, years: 2, projects: 15, icon: "🟦" },
-        { name: "Framer", level: 70, years: 1, projects: 8, icon: "🖼️" },
-        { name: "UI Design", level: 82, years: 3, projects: 30, icon: "✨" },
-        { name: "Prototyping", level: 80, years: 2, projects: 20, icon: "🔧" },
-      ],
-    },
-    {
-      title: "Mobile Development",
-      icon: Smartphone,
-      color: "from-teal-600 to-cyan-600",
-      skills: [
-        { name: "React Native", level: 80, years: 2, projects: 12, icon: "📱" },
-        { name: "Expo", level: 78, years: 2, projects: 10, icon: "🚀" },
-        { name: "Flutter", level: 65, years: 1, projects: 5, icon: "🦋" },
-        {
-          name: "iOS Development",
-          level: 60,
-          years: 1,
-          projects: 3,
-          icon: "🍎",
-        },
-      ],
-    },
-  ];
+  });
 
-  const achievements = [
-    {
-      title: "Full Stack Master",
-      description: "Completed 50+ projects across frontend and backend",
-      icon: Trophy,
-      color: "text-yellow-400",
-      date: "Dec 2024",
-    },
-    {
-      title: "React Expert",
-      description: "Built 45+ React applications with advanced patterns",
-      icon: Award,
-      color: "text-blue-400",
-      date: "Nov 2024",
-    },
-    {
-      title: "Mentor of the Month",
-      description: "Helped 50+ developers level up their skills",
-      icon: Users,
-      color: "text-purple-400",
-      date: "Jan 2025",
-    },
-    {
-      title: "Open Source Contributor",
-      description: "Contributed to 20+ open source projects",
-      icon: GitBranch,
-      color: "text-green-400",
-      date: "Oct 2024",
-    },
-  ];
+  // 3. Kalkulasi Statistik Skill secara Dinamis
+  const allSkills = skillCategories.flatMap((cat) => cat.skills);
+  const totalSkills = allSkills.length;
+  const totalProjects = allSkills.reduce(
+    (sum, skill) => sum + (skill.projectCount || 0),
+    0
+  );
+  const totalYearsExp =
+    totalSkills > 0
+      ? Math.max(...allSkills.map((skill) => skill.yearsOfExperience || 0))
+      : 0;
+  const totalCerts = await prisma.certificate.count({
+    where: { userId: user.id },
+  });
 
-  const skillProgress = [
-    {
-      skill: "Overall Frontend",
-      current: 92,
-      target: 95,
-      category: "Frontend",
-    },
-    {
-      skill: "Backend Architecture",
-      current: 85,
-      target: 90,
-      category: "Backend",
-    },
-    { skill: "Database Design", current: 83, target: 88, category: "Database" },
-    { skill: "DevOps Pipeline", current: 78, target: 85, category: "DevOps" },
-    { skill: "UI/UX Design", current: 80, target: 85, category: "Design" },
-    {
-      skill: "Mobile Development",
-      current: 72,
-      target: 80,
-      category: "Mobile",
-    },
-  ];
+  const totalProficiency = allSkills.reduce(
+    (sum, skill) => sum + skill.proficiency,
+    0
+  );
+  const averageProficiency =
+    totalSkills > 0 ? Math.round(totalProficiency / totalSkills) : 0;
 
-  const certifications = [
-    {
-      name: "AWS Certified Developer",
-      issuer: "Amazon Web Services",
-      date: "2024",
-      status: "Active",
-      icon: "☁️",
-    },
-    {
-      name: "React Advanced Patterns",
-      issuer: "Meta",
-      date: "2024",
-      status: "Active",
-      icon: "⚛️",
-    },
-    {
-      name: "TypeScript Professional",
-      issuer: "Microsoft",
-      date: "2023",
-      status: "Active",
-      icon: "📘",
-    },
-    {
-      name: "Node.js Application Developer",
-      issuer: "Node.js Foundation",
-      date: "2023",
-      status: "Active",
-      icon: "🟢",
-    },
-  ];
+  const skillStats = {
+    totalSkills,
+    yearsExperience: `${totalYearsExp}+`,
+    projectsBuilt: `${totalProjects}+`,
+    certifications: totalCerts,
+    averageLevel: `${averageProficiency}%`,
+  };
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">
@@ -251,7 +155,9 @@ export default async function SkillsPage({
         </div>
         <div className="bg-[#161B22] p-2 rounded-lg border border-gray-800">
           <div className="text-center">
-            <div className="text-xl font-bold text-green-400">95%</div>
+            <div className="text-xl font-bold text-green-400">
+              {skillStats.averageLevel}
+            </div>
             <div className="text-sm text-gray-400">Skill Level</div>
           </div>
         </div>
@@ -263,7 +169,7 @@ export default async function SkillsPage({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-300 text-sm">Total Skills</p>
-              <p className="text-3xl font-bold">32</p>
+              <p className="text-2xl font-bold">{skillStats.totalSkills}</p>
             </div>
             <Code2 className="w-8 h-8 text-blue-400" />
           </div>
@@ -272,7 +178,7 @@ export default async function SkillsPage({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-300 text-sm">Years Experience</p>
-              <p className="text-3xl font-bold">5+</p>
+              <p className="text-2xl font-bold">{skillStats.yearsExperience}</p>
             </div>
             <Calendar className="w-8 h-8 text-green-400" />
           </div>
@@ -281,7 +187,7 @@ export default async function SkillsPage({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-purple-300 text-sm">Projects Built</p>
-              <p className="text-3xl font-bold">200+</p>
+              <p className="text-2xl font-bold">{skillStats.projectsBuilt}</p>
             </div>
             <Target className="w-8 h-8 text-purple-400" />
           </div>
@@ -290,7 +196,7 @@ export default async function SkillsPage({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-yellow-300 text-sm">Certifications</p>
-              <p className="text-3xl font-bold">4</p>
+              <p className="text-2xl font-bold">{skillStats.certifications}</p>
             </div>
             <Award className="w-8 h-8 text-yellow-400" />
           </div>
@@ -299,56 +205,62 @@ export default async function SkillsPage({
 
       {/* Skill Categories */}
       <div className="space-y-8">
-        {skillCategories.map((category, categoryIndex) => {
-          const IconComponent = category.icon;
+        {skillCategories.map((category) => {
+          if (category.skills.length === 0) return null; // Jangan render kategori jika tidak ada skill user di dalamnya
+          const IconComponent = getIconComponent(category.icon);
           return (
             <div
-              key={categoryIndex}
+              key={category.id}
               className="bg-[#161B22] rounded-lg p-6 border border-gray-800"
             >
               <div className="flex items-center mb-6">
                 <div
-                  className={`p-3 rounded-lg bg-gradient-to-r ${category.color} mr-4`}
+                  className={`p-3 rounded-lg bg-gradient-to-r ${
+                    category.color || "from-gray-600 to-gray-700"
+                  } mr-4`}
                 >
                   <IconComponent className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold">{category.title}</h2>
+                  <h2 className="text-lg font-semibold">{category.name}</h2>
                   <p className="text-gray-400 text-sm">
                     {category.skills.length} skills in this category
                   </p>
                 </div>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {category.skills.map((skill, skillIndex) => (
-                  <div
-                    key={skillIndex}
-                    className="bg-[#0D1117] p-4 rounded-lg hover:bg-[#21262D] transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center">
-                        <span className="text-lg mr-2">{skill.icon}</span>
-                        <h3 className="font-semibold">{skill.name}</h3>
+                {category.skills.map(
+                  (
+                    skill: ProfessionalSkill // Tambahkan tipe di sini
+                  ) => (
+                    <div
+                      key={skill.id}
+                      className="bg-[#0D1117] p-4 rounded-lg hover:bg-[#21262D] transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center">
+                          <span className="text-lg mr-2">{skill.icon}</span>
+                          <h3 className="font-semibold">{skill.name}</h3>
+                        </div>
+                        <span className="text-sm font-bold text-blue-400">
+                          {skill.proficiency}%
+                        </span>
                       </div>
-                      <span className="text-sm font-bold text-blue-400">
-                        {skill.level}%
-                      </span>
+                      <div className="w-full bg-gray-700 rounded-full h-2 mb-3">
+                        <div
+                          className={`bg-gradient-to-r ${
+                            category.color || "from-gray-600 to-gray-700"
+                          } h-2 rounded-full`}
+                          style={{ width: `${skill.proficiency}%` }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-400">
+                        <span>{skill.yearsOfExperience || "-"} years</span>
+                        <span>{skill.projectCount || "-"} projects</span>
+                      </div>
                     </div>
-
-                    <div className="w-full bg-gray-700 rounded-full h-2 mb-3">
-                      <div
-                        className={`bg-gradient-to-r ${category.color} h-2 rounded-full transition-all duration-300`}
-                        style={{ width: `${skill.level}%` }}
-                      ></div>
-                    </div>
-
-                    <div className="flex justify-between text-xs text-gray-400">
-                      <span>{skill.years} years</span>
-                      <span>{skill.projects} projects</span>
-                    </div>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             </div>
           );
@@ -358,32 +270,35 @@ export default async function SkillsPage({
       {/* Skill Progress Goals */}
       <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
         <h2 className="text-xl font-semibold mb-4 flex items-center">
-          <TrendingUp className="w-5 h-5 mr-2" />
-          Learning Progress & Goals
+          <TrendingUp className="w-5 h-5 mr-2" /> Learning Progress & Goals
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {skillProgress.map((progress, index) => (
-            <div key={index} className="bg-[#0D1117] p-4 rounded-lg">
+          {user.learningGoals.map((goal) => (
+            <div key={goal.id} className="bg-[#0D1117] p-4 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-medium">{progress.skill}</h3>
+                <h3 className="font-medium">{goal.title}</h3>
                 <div className="text-sm text-gray-400">
-                  {progress.current}% → {progress.target}%
+                  {goal.progress}% → {goal.targetProgress || 100}%
                 </div>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+              <div className="w-full bg-gray-700 rounded-full h-2 mb-2 relative">
                 <div
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full relative"
-                  style={{ width: `${progress.current}%` }}
-                >
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
+                  style={{ width: `${goal.progress}%` }}
+                ></div>
+                {goal.targetProgress && (
                   <div
-                    className="absolute top-0 right-0 w-1 h-2 bg-yellow-400 rounded-full"
-                    style={{ left: `${progress.target}%` }}
+                    className="absolute top-0 h-2 w-1 bg-yellow-400 rounded-r-full"
+                    style={{ left: `${goal.targetProgress}%` }}
+                    title={`Target: ${goal.targetProgress}%`}
                   ></div>
-                </div>
+                )}
               </div>
               <div className="flex justify-between text-xs text-gray-400">
-                <span>{progress.category}</span>
-                <span>{progress.target - progress.current}% to goal</span>
+                <span>{goal.category}</span>
+                {goal.targetProgress && (
+                  <span>{goal.targetProgress - goal.progress}% to goal</span>
+                )}
               </div>
             </div>
           ))}
@@ -392,36 +307,30 @@ export default async function SkillsPage({
 
       {/* Achievements & Certifications */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Achievements */}
         <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <Trophy className="w-5 h-5 mr-2" />
-            Recent Achievements
+            <Trophy className="w-5 h-5 mr-2" /> Recent Achievements
           </h2>
           <div className="space-y-4">
-            {achievements.map((achievement, index) => {
-              const IconComponent = achievement.icon;
+            {user.userAchievements.map(({ achievement }) => {
+              const IconComponent = getIconComponent(achievement.icon);
               return (
                 <div
-                  key={index}
-                  className="bg-[#0D1117] p-4 rounded-lg hover:bg-[#21262D] transition-colors"
+                  key={achievement.id}
+                  className="bg-[#0D1117] p-4 rounded-lg"
                 >
                   <div className="flex items-start">
                     <div className="p-2 bg-gray-800 rounded-lg mr-4">
-                      <IconComponent
-                        className={`w-5 h-5 ${achievement.color}`}
-                      />
+                      <IconComponent className="w-5 h-5 text-yellow-400" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold mb-1">
-                        {achievement.title}
-                      </h3>
+                      <h3 className="font-semibold mb-1">{achievement.name}</h3>
                       <p className="text-gray-400 text-sm mb-2">
                         {achievement.description}
                       </p>
                       <div className="flex items-center text-xs text-gray-500">
                         <Clock className="w-3 h-3 mr-1" />
-                        <span>{achievement.date}</span>
+                        <span>{achievement.requirements}</span>
                       </div>
                     </div>
                   </div>
@@ -430,32 +339,28 @@ export default async function SkillsPage({
             })}
           </div>
         </div>
-
-        {/* Certifications */}
         <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <Award className="w-5 h-5 mr-2" />
-            Certifications
+            <Award className="w-5 h-5 mr-2" /> Certifications
           </h2>
           <div className="space-y-4">
-            {certifications.map((cert, index) => (
-              <div
-                key={index}
-                className="bg-[#0D1117] p-4 rounded-lg hover:bg-[#21262D] transition-colors"
-              >
+            {user.certificates.map((cert) => (
+              <div key={cert.id} className="bg-[#0D1117] p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <span className="text-lg mr-3">{cert.icon}</span>
+                    <span className="text-lg mr-3">{cert.icon || "🎓"}</span>
                     <div>
-                      <h3 className="font-semibold">{cert.name}</h3>
+                      <h3 className="font-semibold">{cert.title}</h3>
                       <p className="text-gray-400 text-sm">{cert.issuer}</p>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm font-semibold text-green-400">
-                      {cert.status}
+                      Active
                     </div>
-                    <div className="text-xs text-gray-400">{cert.date}</div>
+                    <div className="text-xs text-gray-400">
+                      {cert.completionDate.getFullYear()}
+                    </div>
                   </div>
                 </div>
               </div>

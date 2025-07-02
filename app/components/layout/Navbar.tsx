@@ -142,7 +142,7 @@ const Navbar = () => {
                         px-4 py-2 text-sm font-medium border-b-2 transition-colors duration-200 whitespace-nowrap
                         ${
                           isActive
-                            ? "border-teal-500 text-white"
+                            ? "border-orange-500 text-white"
                             : "border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600"
                         }
                       `}

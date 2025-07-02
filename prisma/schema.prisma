@@ -1,18 +1,339 @@
-// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
 
-// 1. Konfigurasi datasource & generator
 datasource db {
   provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id                  String              @id @default(cuid())
+  name                String
+  username            String?             @unique
+  password            String?
+  email               String?             @unique
+  emailVerified       DateTime?
+  image               String?
+  role                UserRole            @default(USER)
+  bio                 String?
+  jobTitle            String?
+  company             String?
+  location            String?
+  websiteUrl          String?
+  cvUrl               String?
+  githubUrl           String?
+  twitterUrl          String?
+  linkedinUrl         String?
+  phone               String?
+  timezone            String?
+  availability        String?
+  responseTime        String?
+  preferredContact    String?
+  openToWork          Boolean             @default(false)
+  openToMentoring     Boolean             @default(false)
+  openToCollaboration Boolean             @default(false)
+  streak              Int                 @default(0)
+  skillPoints         Int                 @default(0)
+  communityRank       String?
+  totalXp             Int                 @default(0)
+  level               Int                 @default(1)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  totalbadges         Int                 @default(0)
+  accounts            Account[]
+  sessions            Session[]
+  projects            Project[]
+  userAchievements    UserAchievement[]
+  learningGoals       LearningGoal[]
+  activityLogs        ActivityLog[]
+  certificates        Certificate[]
+  receivedMessages    ContactMessage[]
+  formalEducations    FormalEducation[]
+  onlineCourses       OnlineCourse[]
+  skillAreas          SkillArea[]
+  workExperiences     WorkExperience[]
+  professionalSkills  ProfessionalSkill[]
 }
 
-// 2. Model yang DIBUTUHKAN oleh NextAuth Prisma Adapter
-// Jangan ubah nama-nama field ini!
+model WorkExperience {
+  id           String          @id @default(cuid())
+  company      String
+  position     String
+  type         EmploymentType
+  location     String?
+  startDate    DateTime
+  endDate      DateTime?
+  logoUrl      String?
+  description  String?
+  achievements String[]
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  technologies Technology[]
+  highlights   WorkHighlight[]
+
+  @@index([userId])
+}
+
+model WorkHighlight {
+  id               String         @id @default(cuid())
+  metric           String
+  label            String
+  workExperienceId String
+  workExperience   WorkExperience @relation(fields: [workExperienceId], references: [id], onDelete: Cascade)
+
+  @@index([workExperienceId])
+}
+
+model ProfessionalSkill {
+  id                String        @id @default(cuid())
+  name              String
+  proficiency       Int
+  type              SkillType
+  yearsOfExperience Int?
+  projectCount      Int?
+  icon              String?
+  userId            String
+  categoryId        String
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category          SkillCategory @relation(fields: [categoryId], references: [id])
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model SkillCategory {
+  id     String              @id @default(cuid())
+  name   String              @unique
+  icon   String?
+  color  String?
+  order  Int                 @default(0)
+  skills ProfessionalSkill[]
+}
+
+model FormalEducation {
+  id           String          @id @default(cuid())
+  institution  String
+  degree       String
+  fieldOfStudy String
+  location     String?
+  startDate    DateTime
+  endDate      DateTime?
+  gpa          String?
+  description  String?
+  logoUrl      String?
+  status       EducationStatus
+  achievements String[]
+  courses      String[]
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model OnlineCourse {
+  id             String          @id @default(cuid())
+  platform       String
+  title          String
+  provider       String
+  completedDate  DateTime?
+  duration       String?
+  status         EducationStatus
+  certificateUrl String?
+  grade          String?
+  description    String?
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills         Skill[]
+
+  @@index([userId])
+}
+
+model SkillArea {
+  id          String   @id @default(cuid())
+  category    String
+  proficiency Int
+  skills      String[]
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ContactMessage {
+  id          String   @id @default(cuid())
+  senderName  String
+  senderEmail String
+  subject     String
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  recipientId String
+  recipient   User     @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId])
+}
+
+model Certificate {
+  id              String              @id @default(cuid())
+  title           String
+  description     String?
+  issuer          String
+  issuerLogo      String?
+  badgeUrl        String?
+  icon            String?
+  level           CertificateLevel
+  completionDate  DateTime
+  expiryDate      DateTime?
+  credentialId    String?
+  verificationUrl String?
+  isVerified      Boolean             @default(false)
+  hours           Int?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  userId          String
+  categoryId      String
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category        CertificateCategory @relation(fields: [categoryId], references: [id])
+  skills          Skill[]
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model CertificateCategory {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  certificates Certificate[]
+}
+
+model Skill {
+  id            String         @id @default(cuid())
+  name          String         @unique
+  certificates  Certificate[]
+  onlineCourses OnlineCourse[]
+}
+
+model Project {
+  id              String           @id @default(cuid())
+  title           String
+  slug            String           @unique
+  description     String
+  longDescription String?
+  thumbnail       String?
+  isPublished     Boolean          @default(false)
+  isFeatured      Boolean          @default(false)
+  projectType     ProjectType      @default(PERSONAL)
+  stars           Int              @default(0)
+  forks           Int              @default(0)
+  views           Int              @default(0)
+  downloads       Int              @default(0)
+  likes           Int              @default(0)
+  commentsCount   Int              @default(0)
+  status          ProjectStatus    @default(IN_PROGRESS)
+  startDate       DateTime?
+  endDate         DateTime?
+  teamSize        Int?
+  role            String?
+  highlights      String[]
+  demoUrl         String?
+  githubUrl       String?
+  client          String?
+  result          String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  authorId        String
+  categoryId      String?
+  author          User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  technologies    Technology[]
+  category        ProjectCategory? @relation(fields: [categoryId], references: [id])
+
+  @@index([authorId])
+  @@index([categoryId])
+}
+
+model ProjectCategory {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  icon     String?
+  color    String?
+  projects Project[]
+}
+
+model Technology {
+  id              String           @id @default(cuid())
+  name            String           @unique
+  projects        Project[]
+  workExperiences WorkExperience[]
+}
+
+model Achievement {
+  id           String            @id @default(cuid())
+  name         String            @unique
+  description  String
+  icon         String
+  xp           Int
+  rarity       AchievementRarity
+  requirements String
+  categoryId   String
+  borderColor  String?
+  color        String?
+  earnedDate   DateTime?
+  progess      Int               @default(0)
+  textColor    String?
+  category     Category          @relation(fields: [categoryId], references: [id])
+  awardedTo    UserAchievement[]
+
+  @@index([categoryId])
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  progress      Int         @default(0)
+  earnedAt      DateTime?
+  userId        String
+  achievementId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+}
+
+model LearningGoal {
+  id             String    @id @default(cuid())
+  title          String
+  progress       Int       @default(0)
+  targetProgress Int?
+  category       String?
+  targetDate     DateTime?
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ActivityLog {
+  id          String       @id @default(cuid())
+  type        ActivityType
+  message     String
+  points      Int
+  createdAt   DateTime     @default(now())
+  userId      String
+  relatedLink String?
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  name         String        @unique
+  achievements Achievement[]
+}
 
 model Account {
   id                String  @id @default(cuid())
@@ -20,15 +341,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -44,21 +364,6 @@ model Session {
   @@index([userId])
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  username      String?   @unique // Tambahan kita untuk Provogram
-  password      String?   // Tambahan kita untuk Provogram
-  imageUrl      String?   // Tambahan kita untuk Provogram
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  role          UserRole  @default(USER) // Tambahan kita untuk Provogram
-  accounts      Account[]
-  sessions      Session[]
-  // Nanti relasi ke Project dll di sini
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -67,10 +372,104 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Enum untuk role user
+model CertificateToSkill {
+  A String
+  B String
+
+  @@id([A, B], map: "_CertificateToSkill_AB_pkey")
+  @@index([B], map: "_CertificateToSkill_B_index")
+  @@map("_CertificateToSkill")
+}
+
+model OnlineCourseToSkill {
+  A String
+  B String
+
+  @@id([A, B], map: "_OnlineCourseToSkill_AB_pkey")
+  @@index([B], map: "_OnlineCourseToSkill_B_index")
+  @@map("_OnlineCourseToSkill")
+}
+
+model ProjectToTechnology {
+  A String
+  B String
+
+  @@id([A, B], map: "_ProjectToTechnology_AB_pkey")
+  @@index([B], map: "_ProjectToTechnology_B_index")
+  @@map("_ProjectToTechnology")
+}
+
+model TechnologyToWorkExperience {
+  A String
+  B String
+
+  @@id([A, B], map: "_TechnologyToWorkExperience_AB_pkey")
+  @@index([B], map: "_TechnologyToWorkExperience_B_index")
+  @@map("_TechnologyToWorkExperience")
+}
+
 enum UserRole {
   SUPERADMIN
   ADMIN
   MENTOR
   USER
+}
+
+enum AchievementRarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum CertificateLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  PROFESSIONAL
+  FOUNDATIONAL
+}
+
+enum ActivityType {
+  COURSE_COMPLETED
+  PROJECT_SHARED
+  MENTORING
+  ACHIEVEMENT_EARNED
+  CERTIFICATE_ADDED
+  CONTACT_MESSAGE_RECEIVED
+  EDUCATION_ADDED
+  EXPERIENCE_ADDED
+  SKILL_UPDATED
+}
+
+enum EducationStatus {
+  GRADUATED
+  IN_PROGRESS
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  FREELANCE
+  INTERNSHIP
+}
+
+enum ProjectType {
+  PERSONAL
+  FREELANCE
+  WORK
+}
+
+enum SkillType {
+  TECHNICAL
+  SOFT
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  IN_PROGRESS
+  ARCHIVED
+  ONGOING
 }
