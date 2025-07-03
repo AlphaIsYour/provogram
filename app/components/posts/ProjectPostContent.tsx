@@ -1,18 +1,18 @@
 import { LinkIcon } from "lucide-react";
-import { Post } from "./types";
+import { Project } from "./types"; // Updated import
 import Image from "next/image";
 
 interface ProjectPostContentProps {
-  project: Post["project"];
+  project: Project; // Direct Project type instead of Post["project"]
 }
 
 export default function ProjectPostContent({
   project,
 }: ProjectPostContentProps) {
-  if (!project) return null; // Pengaman jika data proyek tidak ada
+  if (!project) return null;
 
   return (
-    <div className="px-4 pb-4  ">
+    <div className="px-4 pb-4">
       <div className="relative overflow-hidden h-96 border border-gray-900 rounded-2xl shadow-2xl max-w-4xl mx-auto bg-gray-800">
         {/* Background Image Section - Full Card */}
         <div className="absolute inset-0">
@@ -32,7 +32,9 @@ export default function ProjectPostContent({
           <div className="flex items-center gap-4">
             <div className="w-22 h-22 bg-black/50 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 shadow-xl">
               <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">D</span>
+                <span className="text-white font-bold text-lg">
+                  {project.title.charAt(0).toUpperCase()}
+                </span>
               </div>
             </div>
           </div>
@@ -138,7 +140,7 @@ export default function ProjectPostContent({
           href={project.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 w-30 bg-gray-900 hover:bg-gray-700 backdrop-blur-sm text-white font-sm py-1 px-2 rounded-[12px] transition-all duration-300 border border-white/30 hover:border-white/50 text-sm justify-center"
+          className="inline-flex items-center gap-2 w-30 bg-gray-900 hover:bg-gray-700 backdrop-blur-sm text-white font-sm py-1 px-2 rounded-[12px] transition-all duration-300 border border-white/30 hover:border-white/50 text-sm justify-center cursor-pointer"
         >
           Visit
           <LinkIcon size={12} />

@@ -67,7 +67,7 @@ const getIconComponent = (
 export default async function SkillsPage({
   params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
 

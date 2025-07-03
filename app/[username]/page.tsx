@@ -14,7 +14,6 @@ import {
   Star,
   GitFork,
   Building,
-  Mail,
   Github,
   Twitter,
   Linkedin,
@@ -25,30 +24,79 @@ import {
   TrendingUp,
   Award,
   Code,
-  Clock,
-  MessageCircle,
-  Heart,
-  Share2,
-  Zap,
   Trophy,
   Medal,
-  Brain,
-  Lightbulb,
-  Coffee,
+  Share2,
+  Zap,
   CheckCircle2,
+  Activity,
 } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
+// ==================================
+// HELPER FUNCTIONS
+// ==================================
+// Import Prisma's ActivityType enum for type safety
+import type { $Enums } from "@prisma/client";
+
+// Tipe aktivitas yang didukung (sinkron dengan Prisma)
+type ActivityType = $Enums.ActivityType;
+
+// Helper untuk memetakan tipe aktivitas ke ikon dan warna
+const getActivityIcon = (type: ActivityType) => {
+  switch (type) {
+    case "COURSE_COMPLETED":
+      return { icon: CheckCircle2, color: "text-green-400" };
+    case "PROJECT_SHARED":
+      return { icon: Share2, color: "text-blue-400" };
+    case "MENTORING":
+      return { icon: Users, color: "text-purple-400" };
+    case "ACHIEVEMENT_EARNED":
+      return { icon: Award, color: "text-yellow-400" };
+    case "CERTIFICATE_ADDED":
+      return { icon: Trophy, color: "text-pink-400" };
+    // Tambahkan case lain sesuai enum Prisma jika ada
+    default:
+      return { icon: Zap, color: "text-gray-400" };
+  }
+};
+
+// ==================================
+// KOMPONEN UTAMA
+// ==================================
 export default async function ProfilePage({
   params,
 }: {
   params: Promise<{ username: string }>;
 }) {
-  // Await the params Promise
   const { username } = await params;
 
+  // 1. Query utama untuk mengambil semua data yang dibutuhkan di halaman ini
   const user = await prisma.user.findUnique({
-    where: {
-      username: username,
+    where: { username: username },
+    include: {
+      projects: {
+        where: { isPublished: true, isFeatured: true },
+        include: { technologies: true },
+        take: 2,
+        orderBy: { createdAt: "desc" },
+      },
+      activityLogs: {
+        take: 4,
+        orderBy: { createdAt: "desc" },
+      },
+      userAchievements: {
+        where: { earnedAt: { not: null } },
+        take: 8,
+        orderBy: { earnedAt: "desc" },
+        include: {
+          achievement: true,
+        },
+      },
+      learningGoals: {
+        take: 4,
+        orderBy: { progress: "desc" },
+      },
     },
   });
 
@@ -56,132 +104,20 @@ export default async function ProfilePage({
     notFound();
   }
 
-  // Mock data untuk learning community
-  const learningData = {
-    streak: 47,
-    totalLearningHours: 324,
-    coursesCompleted: 12,
-    projectsBuilt: 28,
-    communityRank: "#156",
-    skillPoints: 2847,
-    mentoringSessions: 15,
-    helpedStudents: 89,
+  // 2. Kalkulasi statistik dinamis
+  const learningStats = {
+    coursesCompleted: await prisma.onlineCourse.count({
+      where: { userId: user.id, status: "GRADUATED" },
+    }),
+    projectsBuilt: await prisma.project.count({ where: { authorId: user.id } }),
+    // Field mentoringSessions dan helpedStudents perlu ditambahkan di skema User jika ingin dinamis
+    // Untuk saat ini, kita bisa gunakan nilai statis atau dari field lain
+    mentoringSessions: user.totalXp / 100, // Contoh kalkulasi
+    helpedStudents: user.totalXp / 50, // Contoh kalkulasi
+    totalLearningHours: await prisma.certificate
+      .aggregate({ where: { userId: user.id }, _sum: { hours: true } })
+      .then((res) => res._sum.hours || 0),
   };
-
-  const recentActivity = [
-    {
-      type: "course_completed",
-      title: "Advanced React Patterns",
-      time: "2 hours ago",
-      points: 150,
-      icon: CheckCircle2,
-      color: "text-green-400",
-    },
-    {
-      type: "project_shared",
-      title: "E-commerce Dashboard",
-      time: "1 day ago",
-      points: 75,
-      icon: Share2,
-      color: "text-blue-400",
-    },
-    {
-      type: "mentoring",
-      title: "Helped 3 students with JavaScript",
-      time: "2 days ago",
-      points: 50,
-      icon: Users,
-      color: "text-purple-400",
-    },
-    {
-      type: "achievement",
-      title: "Earned 'Code Reviewer' badge",
-      time: "3 days ago",
-      points: 100,
-      icon: Award,
-      color: "text-yellow-400",
-    },
-  ];
-
-  const skillBadges = [
-    {
-      name: "React Master",
-      level: "Expert",
-      color: "bg-blue-500",
-      earned: "2024",
-    },
-    {
-      name: "JavaScript Ninja",
-      level: "Expert",
-      color: "bg-yellow-500",
-      earned: "2024",
-    },
-    {
-      name: "TypeScript Pro",
-      level: "Advanced",
-      color: "bg-blue-600",
-      earned: "2024",
-    },
-    {
-      name: "Node.js Expert",
-      level: "Expert",
-      color: "bg-green-500",
-      earned: "2023",
-    },
-    {
-      name: "Python Developer",
-      level: "Intermediate",
-      color: "bg-green-600",
-      earned: "2023",
-    },
-    {
-      name: "UI/UX Enthusiast",
-      level: "Intermediate",
-      color: "bg-pink-500",
-      earned: "2024",
-    },
-    {
-      name: "Mentor",
-      level: "Community",
-      color: "bg-purple-500",
-      earned: "2024",
-    },
-    {
-      name: "Team Player",
-      level: "Community",
-      color: "bg-orange-500",
-      earned: "2023",
-    },
-  ];
-
-  const learningGoals = [
-    { title: "Master Next.js 14", progress: 75, target: "July 2025" },
-    { title: "Build 5 Full-stack Projects", progress: 60, target: "Aug 2025" },
-    { title: "Mentor 50+ Students", progress: 89, target: "Dec 2025" },
-    { title: "Contribute to Open Source", progress: 30, target: "Sep 2025" },
-  ];
-
-  const featuredProjects = [
-    {
-      title: "Smart Learning Platform",
-      description:
-        "AI-powered learning platform with personalized curriculum and progress tracking",
-      tech: ["Next.js", "OpenAI", "PostgreSQL"],
-      stars: 234,
-      forks: 45,
-      image: "/api/placeholder/300/200",
-      featured: true,
-    },
-    {
-      title: "Community Forum App",
-      description: "Real-time discussion platform for programming communities",
-      tech: ["React", "Socket.io", "MongoDB"],
-      stars: 156,
-      forks: 32,
-      image: "/api/placeholder/300/200",
-      featured: true,
-    },
-  ];
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -199,47 +135,57 @@ export default async function ProfilePage({
                   height={120}
                   className="rounded-full border-2 border-gray-700 mb-4"
                 />
-                {/* Learning Streak Badge */}
-                <div className="absolute top-[12vh] right-[1vh] bg-orange-500 text-white rounded-full p-1.5 border-2 border-[#161B22]">
-                  <Flame className="w-5 h-5" />
-                </div>
+                {user.streak > 0 && (
+                  <div className="absolute top-[12vh] right-[1vh] bg-orange-500 text-white rounded-full p-1.5 border-2 border-[#161B22]">
+                    <Flame className="w-5 h-5" />
+                  </div>
+                )}
               </div>
               <h1 className="text-xl font-bold text-center">{user.name}</h1>
               <p className="text-gray-400 text-sm">@{user.username}</p>
-              <div className="flex items-center mt-2 text-orange-400">
-                <Flame className="w-4 h-4 mr-1" />
-                <span className="font-semibold">
-                  {learningData.streak} day streak
-                </span>
-              </div>
+              {user.streak > 0 && (
+                <div className="flex items-center mt-2 text-orange-400">
+                  <Flame className="w-4 h-4 mr-1" />
+                  <span className="font-semibold">
+                    {user.streak} day streak
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Download CV Button */}
-            <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 mb-6 shadow-lg">
-              <Download className="w-4 h-4" />
-              <span className="font-semibold">Download CV</span>
-            </button>
+            {user.cvUrl && (
+              <a
+                href={user.cvUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 mb-6 shadow-lg"
+              >
+                <Download className="w-4 h-4" />
+                <span className="font-semibold">Download CV</span>
+              </a>
+            )}
 
             {/* Bio */}
-            <div className="mb-6">
-              <p className="text-gray-300 text-2sm leading-relaxed">
-                🚀 Full-stack developer & mentor passionate about teaching and
-                building amazing web experiences. Always learning, always
-                sharing knowledge!
-              </p>
-            </div>
+            {user.bio && (
+              <div className="mb-6">
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  {user.bio}
+                </p>
+              </div>
+            )}
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-3 mb-6">
               <div className="bg-[#0D1117] p-3 rounded-lg text-center">
                 <div className="text-lg font-bold text-blue-400">
-                  {learningData.skillPoints}
+                  {user.skillPoints}
                 </div>
                 <div className="text-xs text-gray-400">Skill Points</div>
               </div>
               <div className="bg-[#0D1117] p-3 rounded-lg text-center">
                 <div className="text-lg font-bold text-green-400">
-                  #{learningData.communityRank.slice(1)}
+                  {user.communityRank || "#N/A"}
                 </div>
                 <div className="text-xs text-gray-400">Community Rank</div>
               </div>
@@ -247,52 +193,77 @@ export default async function ProfilePage({
 
             {/* Info */}
             <div className="space-y-3 mb-6 text-sm">
-              <div className="flex items-center text-gray-300">
-                <Building className="w-4 h-4 mr-2" />
-                <span>Senior Developer @TechCorp</span>
-              </div>
-              <div className="flex items-center text-gray-300">
-                <MapPin className="w-4 h-4 mr-2" />
-                <span>Jakarta, Indonesia</span>
-              </div>
-              <div className="flex items-center text-gray-300">
-                <LinkIcon className="w-4 h-4 mr-2" />
-                <a href="#" className="text-blue-400 hover:underline">
-                  youralpha.com
-                </a>
-              </div>
+              {user.jobTitle && (
+                <div className="flex items-center text-gray-300">
+                  <Building className="w-4 h-4 mr-2" />
+                  <span>
+                    {user.jobTitle} {user.company && `@${user.company}`}
+                  </span>
+                </div>
+              )}
+              {user.location && (
+                <div className="flex items-center text-gray-300">
+                  <MapPin className="w-4 h-4 mr-2" />
+                  <span>{user.location}</span>
+                </div>
+              )}
+              {user.websiteUrl && (
+                <div className="flex items-center text-gray-300">
+                  <LinkIcon className="w-4 h-4 mr-2" />
+                  <a
+                    href={user.websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:underline"
+                  >
+                    {user.websiteUrl.replace(/https?:\/\//, "")}
+                  </a>
+                </div>
+              )}
               <div className="flex items-center text-gray-300">
                 <Calendar className="w-4 h-4 mr-2" />
-                <span>Learning since June 2023</span>
+                <span>
+                  Learning since{" "}
+                  {new Date(user.createdAt).toLocaleDateString("en-US", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
               </div>
             </div>
 
             {/* Social Links */}
             <div className="flex space-x-3">
-              <a
-                href="#"
-                className="p-2 text-gray-400 hover:text-white transition-colors bg-[#0D1117] rounded-lg"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="p-2 text-gray-400 hover:text-white transition-colors bg-[#0D1117] rounded-lg"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="p-2 text-gray-400 hover:text-white transition-colors bg-[#0D1117] rounded-lg"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="p-2 text-gray-400 hover:text-white transition-colors bg-[#0D1117] rounded-lg"
-              >
-                <Globe className="w-5 h-5" />
-              </a>
+              {user.githubUrl && (
+                <a
+                  href={user.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 text-gray-400 hover:text-white transition-colors bg-[#0D1117] rounded-lg"
+                >
+                  <Github className="w-5 h-5" />
+                </a>
+              )}
+              {user.twitterUrl && (
+                <a
+                  href={user.twitterUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 text-gray-400 hover:text-white transition-colors bg-[#0D1117] rounded-lg"
+                >
+                  <Twitter className="w-5 h-5" />
+                </a>
+              )}
+              {user.linkedinUrl && (
+                <a
+                  href={user.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 text-gray-400 hover:text-white transition-colors bg-[#0D1117] rounded-lg"
+                >
+                  <Linkedin className="w-5 h-5" />
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -308,7 +279,7 @@ export default async function ProfilePage({
               </h2>
               <div className="text-right">
                 <div className="text-xl font-bold text-blue-400">
-                  {learningData.totalLearningHours}h
+                  {learningStats.totalLearningHours}h
                 </div>
                 <div className="text-sm text-gray-400">Total Learning Time</div>
               </div>
@@ -317,28 +288,28 @@ export default async function ProfilePage({
               <div className="text-center p-3 bg-black/30 rounded-lg">
                 <BookOpen className="w-6 h-6 mx-auto mb-2 text-green-400" />
                 <div className="text-xl font-bold">
-                  {learningData.coursesCompleted}
+                  {learningStats.coursesCompleted}
                 </div>
                 <div className="text-xs text-gray-400">Courses Completed</div>
               </div>
               <div className="text-center p-3 bg-black/30 rounded-lg">
                 <Code className="w-6 h-6 mx-auto mb-2 text-blue-400" />
                 <div className="text-xl font-bold">
-                  {learningData.projectsBuilt}
+                  {learningStats.projectsBuilt}
                 </div>
                 <div className="text-xs text-gray-400">Projects Built</div>
               </div>
               <div className="text-center p-3 bg-black/30 rounded-lg">
                 <Users className="w-6 h-6 mx-auto mb-2 text-purple-400" />
                 <div className="text-xl font-bold">
-                  {learningData.helpedStudents}
+                  {Math.round(learningStats.helpedStudents)}
                 </div>
                 <div className="text-xs text-gray-400">Students Helped</div>
               </div>
               <div className="text-center p-3 bg-black/30 rounded-lg">
                 <Trophy className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
                 <div className="text-xl font-bold">
-                  {learningData.mentoringSessions}
+                  {Math.round(learningStats.mentoringSessions)}
                 </div>
                 <div className="text-xs text-gray-400">Mentoring Sessions</div>
               </div>
@@ -352,19 +323,25 @@ export default async function ProfilePage({
               Recent Activity
             </h2>
             <div className="space-y-4">
-              {recentActivity.map((activity, index) => {
-                const IconComponent = activity.icon;
+              {user.activityLogs.map((activity) => {
+                const { icon: IconComponent, color } = getActivityIcon(
+                  activity.type
+                );
                 return (
                   <div
-                    key={index}
+                    key={activity.id}
                     className="flex items-center p-3 bg-[#0D1117] rounded-lg hover:bg-[#21262D] transition-colors"
                   >
-                    <div className={`p-2 rounded-full bg-gray-800 mr-4`}>
-                      <IconComponent className={`w-4 h-4 ${activity.color}`} />
+                    <div className="p-2 rounded-full bg-gray-800 mr-4">
+                      <IconComponent className={`w-4 h-4 ${color}`} />
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium">{activity.title}</p>
-                      <p className="text-sm text-gray-400">{activity.time}</p>
+                      <p className="font-medium">{activity.message}</p>
+                      <p className="text-sm text-gray-400">
+                        {formatDistanceToNow(activity.createdAt, {
+                          addSuffix: true,
+                        })}
+                      </p>
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-semibold text-green-400">
@@ -391,19 +368,23 @@ export default async function ProfilePage({
                 View all badges →
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {skillBadges.slice(0, 8).map((badge, index) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {user.userAchievements.map(({ achievement }) => (
                 <div
-                  key={index}
+                  key={achievement.id}
                   className="bg-[#0D1117] p-3 rounded-lg text-center hover:bg-[#21262D] transition-colors cursor-pointer"
                 >
                   <div
-                    className={`w-8 h-8 mx-auto mb-2 rounded-full ${badge.color} flex items-center justify-center`}
+                    className={`w-8 h-8 mx-auto mb-2 rounded-full flex items-center justify-center bg-gray-800`}
                   >
-                    <Award className="w-4 h-4 text-white" />
+                    <Award className="w-4 h-4 text-yellow-400" />
                   </div>
-                  <div className="text-xs font-semibold">{badge.name}</div>
-                  <div className="text-xs text-gray-400">{badge.level}</div>
+                  <div className="text-xs font-semibold">
+                    {achievement.name}
+                  </div>
+                  <div className="text-xs text-gray-400 capitalize">
+                    {achievement.rarity.toLowerCase()}
+                  </div>
                 </div>
               ))}
             </div>
@@ -416,15 +397,22 @@ export default async function ProfilePage({
               Current Learning Goals
             </h2>
             <div className="space-y-4">
-              {learningGoals.map((goal, index) => (
-                <div key={index} className="bg-[#0D1117] p-4 rounded-lg">
+              {user.learningGoals.map((goal) => (
+                <div key={goal.id} className="bg-[#0D1117] p-4 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-medium">{goal.title}</h3>
-                    <span className="text-sm text-gray-400">{goal.target}</span>
+                    {goal.targetDate && (
+                      <span className="text-sm text-gray-400">
+                        {new Date(goal.targetDate).toLocaleDateString("en-US", {
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </span>
+                    )}
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-2">
                     <div
-                      className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                      className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
                       style={{ width: `${goal.progress}%` }}
                     ></div>
                   </div>
@@ -451,9 +439,9 @@ export default async function ProfilePage({
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {featuredProjects.map((project, index) => (
+              {user.projects.map((project) => (
                 <div
-                  key={index}
+                  key={project.id}
                   className="bg-[#0D1117] border border-gray-700 rounded-lg overflow-hidden hover:border-gray-600 transition-all hover:scale-105 duration-200"
                 >
                   <div className="h-40 bg-gradient-to-br from-blue-900/50 to-purple-900/50 flex items-center justify-center">
@@ -467,12 +455,12 @@ export default async function ProfilePage({
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-3">
-                      {project.tech.map((tech) => (
+                      {project.technologies.map((tech) => (
                         <span
-                          key={tech}
+                          key={tech.id}
                           className="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded"
                         >
-                          {tech}
+                          {tech.name}
                         </span>
                       ))}
                     </div>

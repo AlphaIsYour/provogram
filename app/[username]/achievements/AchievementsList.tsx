@@ -182,7 +182,7 @@ export default function AchievementsList({
             return (
               <div
                 key={achievement.id}
-                className={`bg-[#161B22] rounded-lg p-6 border transition-all duration-200 hover:scale-101 ${
+                className={`bg-[#161B22] rounded-lg p-6 border transition-all duration-200 ${
                   isEarned
                     ? `${styles.borderColor} border-opacity-50`
                     : "border-gray-800"

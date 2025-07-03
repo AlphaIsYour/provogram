@@ -29,7 +29,7 @@ export default function PostActions() {
       {/* Tombol Star, sekarang menjadi flex container */}
       <button
         onClick={() => setIsStarred(!isStarred)}
-        className="flex items-center gap-2 px-3 py-1.5 bg-gray-900 hover:bg-gray-800 transition-colors rounded-l-md"
+        className="flex items-center gap-2 px-3 py-1.5 bg-gray-900 hover:bg-gray-800 transition-colors rounded-l-md cursor-pointer"
       >
         <Star
           size={22}
@@ -47,7 +47,7 @@ export default function PostActions() {
       <div className="relative">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="p-1.5 bg-gray-900 hover:bg-gray-800 transition-colors rounded-r-md"
+          className="p-1.5 bg-gray-900 hover:bg-gray-800 transition-colors rounded-r-md cursor-pointer"
         >
           <MoreHorizontal size={22} className="text-gray-400" />
         </button>

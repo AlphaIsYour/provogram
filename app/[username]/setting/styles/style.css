@@ -1,0 +1,76 @@
+/* styles/settings.css atau tambahkan ke global.css */
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure proper spacing for scroll targets */
+.settings-section {
+  scroll-margin-top: 120px; /* Adjust this value to control scroll offset */
+  padding-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Active navigation item styling */
+.nav-item-active {
+  color: rgb(96 165 250) !important; /* text-blue-400 */
+  background-color: rgba(30, 58, 138, 0.3) !important; /* bg-blue-900/30 */
+  border-left: 4px solid rgb(96 165 250); /* border-blue-400 */
+}
+
+/* Hover effects for navigation items */
+.nav-item {
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-item:hover {
+  background-color: rgba(13, 17, 23, 1); /* hover:bg-[#0D1117] */
+  color: white;
+}
+
+/* Danger zone styling */
+.nav-item-danger {
+  color: rgb(248 113 113) !important; /* text-red-400 */
+}
+
+.nav-item-danger:hover {
+  color: rgb(252 165 165) !important; /* hover:text-red-300 */
+  background-color: rgba(153, 27, 27, 0.2) !important; /* hover:bg-red-900/20 */
+}
+
+/* Sticky navigation positioning */
+.settings-nav-sticky {
+  position: sticky;
+  top: 6rem; /* Adjust based on your header height */
+  z-index: 10;
+}
+
+/* Settings content sections */
+.settings-content-section {
+  min-height: 300px; /* Ensure sections have minimum height for proper scroll detection */
+  padding: 1.5rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .settings-section {
+    scroll-margin-top: 80px;
+  }
+
+  .settings-nav-sticky {
+    position: relative;
+    top: auto;
+  }
+}
+
+/* Animation for section transitions */
+.settings-section {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Focus states for accessibility */
+.nav-item:focus {
+  outline: 2px solid rgb(59 130 246); /* focus:ring-blue-500 */
+  outline-offset: 2px;
+}

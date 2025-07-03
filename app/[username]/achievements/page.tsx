@@ -22,7 +22,7 @@ import AchievementsList from "./AchievementsList"; // <-- IMPORT KOMPONEN BARU
 export default async function AchievementsPage({
   params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
 

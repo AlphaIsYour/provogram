@@ -1,27 +1,41 @@
-// Definisikan tipe data Author secara terpisah agar bisa dipakai ulang
+// types.ts - Updated to match your database schema
+
 export interface Author {
+  id: string;
   name: string;
-  nickname: string;
+  username: string; // Changed from nickname to username
   avatarUrl: string;
 }
 
-// Definisikan tipe data untuk sebuah Post
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  link: string;
+}
+
 export interface Post {
   id: string;
-  type: "photo" | "text" | "project";
+  type: "PHOTO" | "TEXT" | "PROJECT"; // Changed to match PostType enum
   author: Author;
-  timestamp: string;
-  caption?: string;
-  imageUrls?: string[];
+  authorId: string;
+
+  // Content fields
   textContent?: string;
-  project?: {
-    title: string;
-    description: string;
-    link: string;
-  };
-  // Tambahkan data untuk stats
+  caption?: string;
+  imageUrls: string[]; // Always array as per schema
+
+  // Project relation
+  project?: Project;
+  projectId?: string;
+
+  // Computed stats from relations
   stats?: {
     stars: number;
     comments: number;
   };
+
+  // Timestamps
+  createdAt: Date;
+  updatedAt: Date;
 }

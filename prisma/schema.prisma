@@ -39,9 +39,13 @@ model User {
   communityRank       String?
   totalXp             Int                 @default(0)
   level               Int                 @default(1)
+  dateOfBirth  DateTime?
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
   totalbadges         Int                 @default(0)
+  posts     Post[]      
+  likes     Like[]      
+  comments  Comment[]
   accounts            Account[]
   sessions            Session[]
   projects            Project[]
@@ -57,6 +61,51 @@ model User {
   professionalSkills  ProfessionalSkill[]
 }
 
+model Post {
+  id        String   @id @default(cuid())
+  type      PostType
+
+  textContent String?  @db.Text
+  caption     String?  @db.Text
+  imageUrls   String[]
+
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  projectId String?  @unique
+
+  likes     Like[]
+  comments  Comment[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authorId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  @@unique([postId, userId])
+  @@index([userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  text      String   @db.Text
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  @@index([postId])
+  @@index([authorId])
+}
+
 model WorkExperience {
   id           String          @id @default(cuid())
   company      String
@@ -70,7 +119,7 @@ model WorkExperience {
   achievements String[]
   userId       String
   user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  technologies Technology[]
+  technologies Technology[]    @relation("TechnologyToWorkExperience")
   highlights   WorkHighlight[]
 
   @@index([userId])
@@ -206,6 +255,7 @@ model Certificate {
 model CertificateCategory {
   id           String        @id @default(cuid())
   name         String        @unique
+  color       String?
   certificates Certificate[]
 }
 
@@ -223,6 +273,7 @@ model Project {
   description     String
   longDescription String?
   thumbnail       String?
+  post      Post?
   isPublished     Boolean          @default(false)
   isFeatured      Boolean          @default(false)
   projectType     ProjectType      @default(PERSONAL)
@@ -266,7 +317,7 @@ model Technology {
   id              String           @id @default(cuid())
   name            String           @unique
   projects        Project[]
-  workExperiences WorkExperience[]
+  workExperiences WorkExperience[] @relation("TechnologyToWorkExperience")
 }
 
 model Achievement {
@@ -372,42 +423,6 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model CertificateToSkill {
-  A String
-  B String
-
-  @@id([A, B], map: "_CertificateToSkill_AB_pkey")
-  @@index([B], map: "_CertificateToSkill_B_index")
-  @@map("_CertificateToSkill")
-}
-
-model OnlineCourseToSkill {
-  A String
-  B String
-
-  @@id([A, B], map: "_OnlineCourseToSkill_AB_pkey")
-  @@index([B], map: "_OnlineCourseToSkill_B_index")
-  @@map("_OnlineCourseToSkill")
-}
-
-model ProjectToTechnology {
-  A String
-  B String
-
-  @@id([A, B], map: "_ProjectToTechnology_AB_pkey")
-  @@index([B], map: "_ProjectToTechnology_B_index")
-  @@map("_ProjectToTechnology")
-}
-
-model TechnologyToWorkExperience {
-  A String
-  B String
-
-  @@id([A, B], map: "_TechnologyToWorkExperience_AB_pkey")
-  @@index([B], map: "_TechnologyToWorkExperience_B_index")
-  @@map("_TechnologyToWorkExperience")
-}
-
 enum UserRole {
   SUPERADMIN
   ADMIN
@@ -472,4 +487,10 @@ enum ProjectStatus {
   IN_PROGRESS
   ARCHIVED
   ONGOING
+}
+
+enum PostType {
+  TEXT
+  PHOTO
+  PROJECT
 }

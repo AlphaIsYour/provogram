@@ -15,24 +15,7 @@ import {
   Smartphone,
 } from "lucide-react";
 import ProjectsList from "./ProjectsList"; // <-- IMPORT KOMPONEN BARU
-
-// ==================================
-// HELPER FUNCTIONS (Bisa diakses oleh Client Component)
-// ==================================
-const iconMap: { [key: string]: React.ElementType } = {
-  Code,
-  Globe,
-  Palette,
-  Server,
-  Smartphone,
-};
-
-export const getIconComponent = (
-  iconName: string | null | undefined
-): React.ElementType => {
-  if (!iconName) return Code;
-  return iconMap[iconName] || Code;
-};
+import { getIconComponent } from "@/lib/icons";
 
 // ==================================
 // KOMPONEN UTAMA (SERVER)
@@ -40,7 +23,7 @@ export const getIconComponent = (
 export default async function ProjectsPage({
   params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
 

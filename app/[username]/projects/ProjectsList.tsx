@@ -10,6 +10,7 @@ import {
   ProjectCategory,
   ProjectStatus,
 } from "@prisma/client";
+import { getIconComponent } from "@/lib/icons";
 import {
   Code as CodeIcon,
   Star as StarIcon,
@@ -27,7 +28,6 @@ import {
   BookOpen,
   Calendar,
 } from "lucide-react";
-import { getIconComponent } from "./page";
 
 // TIPE DATA
 type ProjectWithRelations = Project & {
