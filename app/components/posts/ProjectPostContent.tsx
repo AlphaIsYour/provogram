@@ -4,16 +4,19 @@ import Image from "next/image";
 
 interface ProjectPostContentProps {
   project: Project; // Direct Project type instead of Post["project"]
+  caption?: string; // Add caption as an optional prop
 }
 
 export default function ProjectPostContent({
+  caption,
   project,
 }: ProjectPostContentProps) {
   if (!project) return null;
 
   return (
     <div className="px-4 pb-4">
-      <div className="relative overflow-hidden h-96 border border-gray-900 rounded-2xl shadow-2xl max-w-4xl mx-auto bg-gray-800">
+      {caption && <p className="text-gray-300 mb-4">{caption}</p>}
+      <div className="relative overflow-hidden h-96 border border-gray-900 rounded-2xl shadow-2xl max-w-6xl mx-auto bg-gray-800">
         {/* Background Image Section - Full Card */}
         <div className="absolute inset-0">
           <Image
@@ -28,9 +31,9 @@ export default function ProjectPostContent({
         </div>
 
         {/* Logo/Icon positioned on image */}
-        <div className="absolute top-44 z-50 left-5">
+        <div className="absolute top-44 z-[8] left-5">
           <div className="flex items-center gap-4">
-            <div className="w-22 h-22 bg-black/50 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 shadow-xl">
+            <div className="w-22 h-22 bg-black/50 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 shadow-xl animated-icon">
               <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">
                   {project.title.charAt(0).toUpperCase()}
@@ -38,7 +41,7 @@ export default function ProjectPostContent({
               </div>
             </div>
           </div>
-          <div className="relative z-10 p-2">
+          <div className="relative z-[7] p-2">
             {/* Title */}
             <div className="flex flex-col items-start gap-1">
               <h3 className="font-bold text-xl text-white mb-1 leading-tight max-w-md">
@@ -53,7 +56,7 @@ export default function ProjectPostContent({
         </div>
 
         {/* Content Section with Angled Background */}
-        <div className="relative z-10">
+        <div className="relative z-[1]">
           {/* Background yang miring */}
           <div
             className="absolute inset-x-0 -left-[420px] top-[224px] h-[160px] rounded-[50px] w-[900px] border-t border-r border-gray-800 bg-gradient-to-br bg-black z-0"
@@ -63,7 +66,7 @@ export default function ProjectPostContent({
             }}
           />
         </div>
-        <div className="relative z-9">
+        <div className="relative z-[2]">
           <div
             className="absolute inset-x-0 -left-[418px] top-[223px] h-[161px] w-[900px] rounded-[50px] z-0"
             style={{
@@ -73,66 +76,6 @@ export default function ProjectPostContent({
               position: "relative",
             }}
           />
-          <style jsx>{`
-            @property --angle {
-              syntax: "<angle>";
-              initial-value: 0deg;
-              inherits: false;
-            }
-
-            .z-9 > div::before,
-            .z-9 > div::after {
-              content: "";
-              position: absolute;
-              inset: -3px;
-              z-index: -1;
-              border-radius: 50px;
-              background: conic-gradient(
-                from var(--angle),
-                #5a5b6d,
-                #2c52b3,
-                #fb2f38,
-                #fff867,
-                #ffffff,
-                #ffffff,
-                #ffffff,
-                #ffffff,
-                #ffffff,
-                #ffffff,
-                #fff867,
-                #fb2f38,
-                #2c52b3,
-                #5a5b6d
-              );
-              animation: glowing-border 5s linear infinite;
-            }
-
-            .z-9 > div::after {
-              z-index: -2;
-              filter: blur(15px);
-              animation: glowing-border 5s linear infinite,
-                blur-effect 5s linear infinite;
-            }
-
-            @keyframes glowing-border {
-              from {
-                --angle: 0deg;
-              }
-              to {
-                --angle: 360deg;
-              }
-            }
-
-            @keyframes blur-effect {
-              0%,
-              100% {
-                filter: blur(1px);
-              }
-              50% {
-                filter: blur(3px);
-              }
-            }
-          `}</style>
         </div>
       </div>
       <div className="mt-2 flex justify-center">

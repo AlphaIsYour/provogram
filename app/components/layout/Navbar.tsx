@@ -2,12 +2,12 @@
 // components/layout/Navbar.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, User, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-
+import { useSession } from "next-auth/react";
 import LeftSidebar from "@/app/components/layout/LeftSidebar";
 import RightSidebar from "@/app/components/layout/RightSidebar";
 import SearchModal from "@/app/components/layout/SearchModal";
@@ -29,13 +29,24 @@ const profileTabs = [
   { name: "Setting", href: "/setting" },
 ];
 
+// Interface untuk user data
+interface UserData {
+  username: string;
+  image: string;
+  name: string;
+}
+
 const Navbar = () => {
   const [isLeftSidebarOpen, setLeftSidebarOpen] = useState(false);
   const [isRightSidebarOpen, setRightSidebarOpen] = useState(false);
   const [isSearchModalOpen, setSearchModalOpen] = useState(false);
   const [isNotificationOpen, setNotificationOpen] = useState(false);
+  const { data: session } = useSession(); // <-- Ambil sesi langsung dari hook
+  const user = session?.user;
 
   const pathname = usePathname();
+
+  // Fetch user data (ganti dengan API call sesuai sistem Anda)
 
   // Check if we're on a profile page (pattern: /username atau /username/tab)
   const isProfilePage = () => {
@@ -49,6 +60,7 @@ const Navbar = () => {
         "notifications",
         "search",
         "classroom",
+        "leaderboard",
       ];
       return !specialRoutes.includes(pathSegments[0]);
     }
@@ -65,6 +77,66 @@ const Navbar = () => {
   const getCurrentTab = () => {
     const pathSegments = pathname.split("/").filter(Boolean);
     return pathSegments[1] || "";
+  };
+
+  // Get dynamic page title based on current path
+  const getPageTitle = () => {
+    const pathSegments = pathname.split("/").filter(Boolean);
+
+    if (pathname === "/") {
+      return "Dashboard";
+    }
+
+    if (pathSegments.length === 0) {
+      return "Dashboard";
+    }
+
+    // Special routes
+    const specialRoutes: { [key: string]: string } = {
+      dashboard: "Dashboard",
+      classroom: "Classroom",
+      leaderboard: "Leaderboard",
+      settings: "Settings",
+      notifications: "Notifications",
+      search: "Search",
+    };
+
+    const firstSegment = pathSegments[0];
+
+    // Check if it's a special route
+    if (specialRoutes[firstSegment]) {
+      // For classroom, add sub-page if exists
+      if (firstSegment === "classroom" && pathSegments.length > 1) {
+        const subPage = pathSegments[1];
+        const subPageTitles: { [key: string]: string } = {
+          enroll: "Enrollment",
+          divisions: "Divisions",
+          courses: "Courses",
+          assignments: "Assignments",
+        };
+        return `${specialRoutes[firstSegment]} - ${
+          subPageTitles[subPage] ||
+          subPage.charAt(0).toUpperCase() + subPage.slice(1)
+        }`;
+      }
+      return specialRoutes[firstSegment];
+    }
+
+    // If it's a profile page, show username
+    if (isProfilePage()) {
+      const username = getCurrentUsername();
+      const currentTab = getCurrentTab();
+
+      if (currentTab) {
+        const tabName =
+          currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+        return `${username} - ${tabName}`;
+      }
+      return `${username}`;
+    }
+
+    // Default fallback
+    return firstSegment.charAt(0).toUpperCase() + firstSegment.slice(1);
   };
 
   return (
@@ -88,7 +160,7 @@ const Navbar = () => {
                 className="rounded-full object-cover"
               />
               <span className="text-gray-200 text-[14px] font-semibold hidden md:block">
-                Dashboard
+                {getPageTitle()}
               </span>
             </Link>
           </div>
@@ -117,7 +189,27 @@ const Navbar = () => {
               onClick={() => setRightSidebarOpen(true)}
               className="p-1 rounded-full"
             >
-              <div className="w-9 h-9 bg-yellow-500 rounded-full"></div>
+              {/* Profile Picture */}
+              <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-gray-600 hover:border-gray-400 transition-colors">
+                {user?.image ? (
+                  <Image
+                    width={36}
+                    height={36}
+                    src={user.image}
+                    alt={user.name || "Profile"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                    <User size={20} className="text-white" />
+                  </div>
+                )}
+
+                {/* Fallback avatar jika image gagal load */}
+                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 items-center justify-center hidden">
+                  <User size={20} className="text-white" />
+                </div>
+              </div>
             </button>
           </div>
         </div>

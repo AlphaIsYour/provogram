@@ -1,423 +1,177 @@
-// prisma/schema.prisma
+// app/classroom/page.tsx
+import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { notFound, redirect } from "next/navigation";
+import { ClassCard } from "@/app/components/classroom/ClassCard";
+import { UpcomingTaskCard } from "@/app/components/classroom/UpcomingTaskCard";
+import { ReviewCard } from "@/app/components/classroom/ReviewCard";
+import { GraduationCap, ListTodo } from "lucide-react";
+import DivisionSelection from "./components/DivisionSelection"; // <-- Komponen dari briefing sebelumnya
 
-datasource db {
-  provider     = "postgresql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
-}
+// Fungsi untuk mengambil data dinamis
+async function getDashboardData(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      enrollments: { where: { status: 'PASSED' }, include: { division: true } },
+      // ... (include lain yang dibutuhkan)
+    },
+  });
+  if (!user) return null;
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-// ===============================================
-// MODEL INTI
-// ===============================================
-
-model User {
-  id            String    @id @default(cuid())
-  name          String
-  username      String?   @unique
-  password      String?   
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?   
-  role          UserRole  @default(USER)
-  bio           String?   @db.Text 
-  jobTitle      String?   
-  company       String?   
-  location      String?   
-  websiteUrl    String?   
-  cvUrl         String?   
-  githubUrl     String?
-  twitterUrl    String?
-  linkedinUrl   String?
-  phone               String?   
-  timezone            String?   
-  availability        String?   
-  responseTime        String?   
-  preferredContact    String?   
-  openToWork          Boolean   @default(false)
-  openToMentoring     Boolean   @default(false)
-  openToCollaboration Boolean   @default(false)
-  streak        Int       @default(0)  
-  skillPoints   Int       @default(0)  
-  communityRank String?   
-  totalXp       Int       @default(0) 
-  level         Int       @default(1) 
-  createdAt     DateTime  @default(now()) 
-  updatedAt     DateTime  @updatedAt
-
-  accounts          Account[]
-  sessions          Session[]
-  projects          Project[]      
-  userAchievements  UserAchievement[]    
-  learningGoals     LearningGoal[] 
-  activityLogs      ActivityLog[]  
-  certificates      Certificate[]
-  receivedMessages  ContactMessage[]
-  formalEducations  FormalEducation[]
-  onlineCourses     OnlineCourse[]
-  skillAreas        SkillArea[]
-  workExperiences   WorkExperience[]
-  professionalSkills ProfessionalSkill[]
+  if (user.role === 'MENTOR') {
+    const teachingClasses = await prisma.class.findMany({ where: { mentorId: userId } });
+    const submissionsToReview = await prisma.submission.findMany({
+        where: { task: { class: { mentorId: userId } }, isReviewed: false },
+        include: { task: { include: { class: true } }, student: true }
+    });
+    return { role: 'MENTOR', userName: user.name, teachingClasses, submissionsToReview };
+  }
   
-  // --- PENAMBAHAN BARU UNTUK HOMEPAGE FEED ---
-  posts     Post[]      
-  likes     Like[]      
-  comments  Comment[]
+  if (user.role === 'STUDENT') {
+    const enrolledClasses = await prisma.class.findMany({ where: { students: { some: { id: userId } } } });
+    const upcomingDeadlines = await prisma.task.findMany({
+        where: { class: { students: { some: { id: userId } } }, deadline: { gte: new Date() } },
+        orderBy: { deadline: 'asc' }
+    });
+    return { role: 'STUDENT', userName: user.name, enrolledClasses, upcomingDeadlines };
+  }
+
+  // Jika rolenya USER atau UNREGISTERED
+  return { role: user.role };
 }
 
-// --- PENAMBAHAN BARU UNTUK HOMEPAGE FEED ---
-model Post {
-  id        String   @id @default(cuid())
-  type      PostType
 
-  textContent String?  @db.Text
-  caption     String?  @db.Text
-  imageUrls   String[]
+export default async function ClassroomDashboardPage() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect('/api/auth/signin');
+  }
 
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId  String
-  
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  projectId String?  @unique
+  const data = await getDashboardData(session.user.id);
 
-  likes     Like[]
-  comments  Comment[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  if (!data) return notFound();
 
-  @@index([authorId])
+  // === INI BAGIAN PENTINGNYA ===
+  // Jika user belum jadi STUDENT atau MENTOR, arahkan ke pilihan divisi
+  if (data.role === 'USER' || data.role === 'UNREGISTERED') {
+    return (
+      <DivisionSelection />
+    );
+  }
+
+  // Jika sudah, tampilkan dashboard yang sesuai
+  return (
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold text-white tracking-tight">Selamat Datang Kembali, {data.userName}</h1>
+        <p className="text-[#9CA3AF] text-sm">{data.role === 'MENTOR' ? "Kelola kelas dan pantau progress siswa Anda" : "Lanjutkan perjalanan belajar Anda hari ini"}</p>
+      </div>
+      {data.role === 'MENTOR' ? <MentorDashboard data={data} /> : <UserDashboard data={data} />}
+    </div>
+  );
 }
 
-model Like {
-  id        String   @id @default(cuid())
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  @@unique([postId, userId])
-}
+// ... Komponen MentorDashboard dan UserDashboard tetap sama, tapi sekarang akan menerima data dinamis ...
 
-model Comment {
-  id        String   @id @default(cuid())
-  text      String   @db.Text
-  createdAt DateTime @default(now())
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId  String
-  @@index([postId])
-  @@index([authorId])
-}
-// --- AKHIR PENAMBAHAN BARU ---
+// Tampilan Dashboard untuk MENTOR
+const MentorDashboard = ({ data }: { data: any }) => (
+  <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+    {/* Main Content */}
+    <div className="xl:col-span-3 space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-white">
+          Kelas yang Anda Ajar
+        </h2>
+        <span className="text-sm text-[#9CA3AF] bg-[#1F2937]/40 px-3 py-1 rounded-full">
+          {data.teachingClasses.length} Kelas Aktif
+        </span>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {data.teachingClasses.map((cls: any) => (
+          <ClassCard key={cls.id} {...cls} role="mentor" />
+        ))}
+      </div>
+    </div>
 
+    {/* Sidebar */}
+    <div className="xl:col-span-1 space-y-6">
+      <div className="bg-[#111827]/80 backdrop-blur-sm border border-[#1F2937]/60 rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-semibold text-white">
+            Perlu Diperiksa
+          </h3>
+          {data.submissionsToReview.length > 0 && (
+            <span className="w-2 h-2 bg-[#EF4444] rounded-full animate-pulse"></span>
+          )}
+        </div>
+        <div className="space-y-3">
+          {data.submissionsToReview.map((sub: any) => (
+            <ReviewCard key={sub.taskId} {...sub} />
+          ))}
+          {data.submissionsToReview.length === 0 && (
+            <div className="text-center py-6">
+              <div className="w-12 h-12 bg-[#1F2937]/60 rounded-full flex items-center justify-center mx-auto mb-3">
+                <GraduationCap size={20} className="text-[#9CA3AF]" />
+              </div>
+              <p className="text-[#9CA3AF] text-sm">
+                Tidak ada tugas yang perlu diperiksa
+              </p>
+              <p className="text-[#6B7280] text-xs mt-1">Kerja bagus! 🎉</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
-model Project {
-  id               String   @id @default(cuid())
-  title            String
-  slug             String   @unique
-  description      String   @db.Text
-  longDescription  String?  @db.Text 
-  thumbnail        String?
-  isPublished      Boolean  @default(false)
-  isFeatured       Boolean  @default(false)
-  projectType      ProjectType @default(PERSONAL)
-  stars            Int      @default(0)
-  forks            Int      @default(0)
-  views            Int      @default(0)
-  downloads        Int      @default(0)
-  likes            Int      @default(0)
-  commentsCount    Int      @default(0)
-  status           ProjectStatus @default(IN_PROGRESS)
-  startDate        DateTime?
-  endDate          DateTime?
-  teamSize         Int?
-  role             String?  
-  highlights       String[] 
-  demoUrl          String?
-  githubUrl        String?
-  client           String?
-  result           String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  
-  author           User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId         String
-  technologies     Technology[]
-  category         ProjectCategory?  @relation(fields: [categoryId], references: [id])
-  categoryId       String?
+// Tampilan Dashboard untuk USER (SISWA)
+const UserDashboard = ({ data }: { data: any }) => (
+  <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+    {/* Main Content */}
+    <div className="xl:col-span-3 space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-white">Kelas Saya</h2>
+        <span className="text-sm text-[#9CA3AF] bg-[#1F2937]/40 px-3 py-1 rounded-full">
+          {data.enrolledClasses.length} Kelas Diikuti
+        </span>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {data.enrolledClasses.map((cls: any) => (
+          <ClassCard key={cls.id} {...cls} role="user" />
+        ))}
+      </div>
+    </div>
 
-  // --- PENAMBAHAN BARU ---
-  post      Post?
-
-  @@index([authorId])
-  @@index([categoryId])
-}
-
-// ... (sisa model sama seperti sebelumnya, aku sertakan di bawah untuk kelengkapan)
-model WorkExperience {
-  id           String         @id @default(cuid())
-  company      String
-  position     String
-  type         EmploymentType
-  location     String?
-  startDate    DateTime
-  endDate      DateTime?
-  logoUrl      String?
-  description  String?        @db.Text
-  achievements String[]
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String
-  technologies Technology[]
-  highlights   WorkHighlight[]
-  @@index([userId])
-}
-
-model WorkHighlight {
-  id               String         @id @default(cuid())
-  metric           String
-  label            String
-  workExperience   WorkExperience @relation(fields: [workExperienceId], references: [id], onDelete: Cascade)
-  workExperienceId String
-  @@index([workExperienceId])
-}
-
-model ProfessionalSkill {
-  id                String   @id @default(cuid())
-  name              String
-  proficiency       Int
-  type              SkillType
-  yearsOfExperience Int?
-  projectCount      Int?
-  icon              String?
-  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId            String
-  category          SkillCategory @relation(fields: [categoryId], references: [id])
-  categoryId        String
-  @@unique([userId, name])
-  @@index([userId])
-  @@index([categoryId])
-}
-
-model SkillCategory {
-  id       String              @id @default(cuid())
-  name     String              @unique
-  icon     String?
-  color    String?
-  order    Int                 @default(0)
-  skills   ProfessionalSkill[]
-}
-
-model FormalEducation {
-  id            String   @id @default(cuid())
-  institution   String
-  degree        String
-  fieldOfStudy  String
-  location      String?
-  startDate     DateTime
-  endDate       DateTime?
-  gpa           String?
-  description   String?  @db.Text
-  logoUrl       String?
-  status        EducationStatus
-  achievements  String[]
-  courses       String[]
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  @@index([userId])
-}
-
-model OnlineCourse {
-  id             String          @id @default(cuid())
-  platform       String
-  title          String
-  provider       String
-  completedDate  DateTime?
-  duration       String?
-  status         EducationStatus
-  certificateUrl String?
-  grade          String?
-  description    String?         @db.Text
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String
-  skills         Skill[]
-  @@index([userId])
-}
-
-model SkillArea {
-  id          String   @id @default(cuid())
-  category    String
-  proficiency Int
-  skills      String[]
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
-  @@index([userId])
-}
-
-model Certificate {
-  id              String   @id @default(cuid())
-  title           String
-  description     String?  @db.Text
-  issuer          String
-  issuerLogo      String?
-  badgeUrl        String?
-  icon            String?
-  level           CertificateLevel
-  completionDate  DateTime
-  expiryDate      DateTime?
-  credentialId    String?
-  verificationUrl String?
-  isVerified      Boolean  @default(false)
-  hours           Int?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
-  category    CertificateCategory @relation(fields: [categoryId], references: [id])
-  categoryId  String
-  skills      Skill[]
-  @@index([userId])
-  @@index([categoryId])
-}
-
-model CertificateCategory {
-  id           String        @id @default(cuid())
-  name         String        @unique
-  certificates Certificate[]
-}
-
-model Skill {
-  id            String         @id @default(cuid())
-  name          String         @unique
-  certificates  Certificate[]
-  onlineCourses OnlineCourse[]
-}
-
-model ProjectCategory {
-  id       String    @id @default(cuid())
-  name     String    @unique
-  icon     String?
-  color    String?
-  projects Project[]
-}
-
-model Technology {
-  id              String           @id @default(cuid())
-  name            String           @unique
-  projects        Project[]
-  workExperiences WorkExperience[]
-}
-
-model Achievement {
-  id           String             @id @default(cuid())
-  name         String             @unique
-  description  String             @db.Text
-  icon         String
-  xp           Int
-  rarity       AchievementRarity
-  requirements String
-  category     Category           @relation(fields: [categoryId], references: [id])
-  categoryId   String
-  awardedTo    UserAchievement[]
-  @@index([categoryId])
-}
-
-model UserAchievement {
-  id            String    @id @default(cuid())
-  progress      Int       @default(0)
-  earnedAt      DateTime?
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
-  achievementId String
-  @@unique([userId, achievementId])
-  @@index([userId])
-  @@index([achievementId])
-}
-
-model LearningGoal {
-  id             String    @id @default(cuid())
-  title          String
-  progress       Int       @default(0)
-  targetProgress Int?
-  category       String?
-  targetDate     DateTime?
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String
-  @@index([userId])
-}
-
-model ActivityLog {
-  id        String       @id @default(cuid())
-  type      ActivityType
-  message   String
-  points    Int
-  createdAt DateTime     @default(now())
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  relatedLink String?
-  @@index([userId])
-}
-
-model Category {
-  id           String         @id @default(cuid())
-  name         String         @unique
-  achievements Achievement[]
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@unique([provider, providerAccountId])
-  @@index([userId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@index([userId])
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-  @@unique([identifier, token])
-}
-
-// ===============================================
-// ENUMS
-// ===============================================
-enum UserRole { SUPERADMIN, ADMIN, MENTOR, USER }
-enum AchievementRarity { COMMON, RARE, EPIC, LEGENDARY }
-enum CertificateLevel { BEGINNER, INTERMEDIATE, ADVANCED, PROFESSIONAL, FOUNDATIONAL }
-enum ActivityType { COURSE_COMPLETED, PROJECT_SHARED, MENTORING, ACHIEVEMENT_EARNED, CERTIFICATE_ADDED, CONTACT_MESSAGE_RECEIVED, EDUCATION_ADDED, EXPERIENCE_ADDED, SKILL_UPDATED, POST_CREATED }
-enum EducationStatus { GRADUATED, IN_PROGRESS }
-enum EmploymentType { FULL_TIME, PART_TIME, CONTRACT, FREELANCE, INTERNSHIP }
-enum ProjectType { PERSONAL, FREELANCE, WORK }
-enum ProjectStatus { ACTIVE, COMPLETED, IN_PROGRESS, ARCHIVED, ONGOING }
-enum SkillType { TECHNICAL, SOFT }
-
-// --- PENAMBAHAN BARU ---
-enum PostType {
-  TEXT
-  PHOTO
-  PROJECT
-}
+    {/* Sidebar */}
+    <div className="xl:col-span-1 space-y-6">
+      <div className="bg-[#111827]/80 backdrop-blur-sm border border-[#1F2937]/60 rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-semibold text-white">
+            Tugas Mendatang
+          </h3>
+          {data.upcomingDeadlines.some((task: any) => task.isUrgent) && (
+            <span className="w-2 h-2 bg-[#F59E0B] rounded-full animate-pulse"></span>
+          )}
+        </div>
+        <div className="space-y-3">
+          {data.upcomingDeadlines.map((task: any) => (
+            <UpcomingTaskCard key={task.taskId} {...task} />
+          ))}
+          {data.upcomingDeadlines.length === 0 && (
+            <div className="text-center py-6">
+              <div className="w-12 h-12 bg-[#1F2937]/60 rounded-full flex items-center justify-center mx-auto mb-3">
+                <ListTodo size={20} className="text-[#9CA3AF]" />
+              </div>
+              <p className="text-[#9CA3AF] text-sm">
+                Tidak ada tugas mendatang
+              </p>
+              <p className="text-[#6B7280] text-xs mt-1">Santai dulu! 😎</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+);

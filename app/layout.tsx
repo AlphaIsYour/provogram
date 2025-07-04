@@ -31,7 +31,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         ></link>
         <body
-          className={`${inter.className} bg-[#393E46]`}
+          className={`${inter.className} bg-[#0D1117]`}
           suppressHydrationWarning={true}
         >
           {" "}

@@ -42,7 +42,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
           <div
             className="flex items-center gap-3 w-full bg-[#181818] p-3 rounded-lg border border-gray-700 
                        transition-colors duration-200 
-                       focus-within:border-teal-500 focus-within:ring-1 focus-within:ring-teal-500/50"
+                       focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500/50"
           >
             <Search className="text-gray-500 flex-shrink-0" size={20} />
             <input

@@ -10,7 +10,8 @@ import {
   Github,
   Settings,
   LogOut,
-  ChartBar,
+  Trophy, // Tambahkan Trophy untuk leaderboard
+  // ChartBar, // Tidak perlu ChartBar lagi
   // Hapus import yang tidak digunakan untuk membersihkan kode
   // Building, Briefcase, Heart, Rocket, Globe, LifeBuoy, Users
 } from "lucide-react";
@@ -149,7 +150,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
               Classroom
             </NavItem>
             <NavItem
-              icon={<ChartBar size={16} className="text-gray-400" />}
+              icon={<Trophy size={16} className="text-gray-400" />}
               href="/leaderboard"
               onClick={onClose}
             >

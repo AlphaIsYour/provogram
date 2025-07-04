@@ -1,125 +1,103 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// Kita akan import komponen-komponen kecil yang akan kita buat nanti
+// app/classroom/page.tsx
+import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { notFound, redirect } from "next/navigation";
 import { ClassCard } from "@/app/components/classroom/ClassCard";
 import { UpcomingTaskCard } from "@/app/components/classroom/UpcomingTaskCard";
 import { ReviewCard } from "@/app/components/classroom/ReviewCard";
 import { GraduationCap, ListTodo } from "lucide-react";
+import DivisionSelection from "./components/DivisionSelection"; // <-- Komponen dari briefing sebelumnya
 
-// Ini adalah fungsi dummy untuk simulasi mengambil data dari backend
-// Di aplikasi nyata, ini akan jadi fetch API
-const getDashboardData = async (userId: string) => {
-  // Simulasi fetch user role
-  const userRole = "mentor"; // Ganti jadi 'user' untuk melihat tampilan siswa
+// Fungsi untuk mengambil data dinamis
+async function getDashboardData(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      enrollments: { where: { status: "PASSED" }, include: { division: true } },
+      // ... (include lain yang dibutuhkan)
+    },
+  });
+  if (!user) return null;
 
-  if (userRole === "mentor") {
+  if (user.role === "MENTOR") {
+    const teachingClasses = await prisma.class.findMany({
+      where: { mentorId: userId },
+    });
+    const submissionsToReview = await prisma.submission.findMany({
+      where: { task: { class: { mentorId: userId } }, isReviewed: false },
+      include: { task: { include: { class: true } }, student: true },
+    });
     return {
-      role: "mentor",
-      userName: "Prof. Budi",
-      teachingClasses: [
-        {
-          id: "1",
-          slug: "belajar-nextjs",
-          name: "Belajar Next.js dari Dasar",
-          studentCount: 32,
-          newSubmissions: 5,
-        },
-        {
-          id: "2",
-          slug: "mastering-tailwind",
-          name: "Mastering Tailwind CSS",
-          studentCount: 25,
-          newSubmissions: 0,
-        },
-      ],
-      submissionsToReview: [
-        {
-          taskId: "t1",
-          taskName: "Membuat Landing Page",
-          className: "Belajar Next.js",
-          studentName: "Andi",
-          submittedAt: "2 jam lalu",
-        },
-        {
-          taskId: "t2",
-          taskName: "Component Library",
-          className: "Mastering Tailwind CSS",
-          studentName: "Citra",
-          submittedAt: "5 jam lalu",
-        },
-      ],
-    };
-  } else {
-    return {
-      role: "user",
-      userName: "Andi",
-      enrolledClasses: [
-        {
-          id: "1",
-          slug: "belajar-nextjs",
-          name: "Belajar Next.js dari Dasar",
-          mentorName: "Prof. Budi",
-          progress: 75,
-        },
-        {
-          id: "3",
-          slug: "figma-untuk-pemula",
-          name: "Figma untuk Pemula",
-          mentorName: "Rina S.",
-          progress: 40,
-        },
-      ],
-      upcomingDeadlines: [
-        {
-          taskId: "d1",
-          taskName: "Final Project Proposal",
-          className: "Belajar Next.js",
-          deadline: "2 hari lagi",
-          isUrgent: true,
-        },
-        {
-          taskId: "d2",
-          taskName: "Studi Kasus UI/UX",
-          className: "Figma untuk Pemula",
-          deadline: "5 hari lagi",
-          isUrgent: false,
-        },
-      ],
+      role: "MENTOR",
+      userName: user.name,
+      teachingClasses,
+      submissionsToReview,
     };
   }
-};
 
-const ClassroomDashboardPage = async () => {
-  // Di aplikasi nyata, userId akan didapat dari sesi otentikasi
-  const data = await getDashboardData("user-123");
+  if (user.role === "STUDENT") {
+    const enrolledClasses = await prisma.class.findMany({
+      where: { students: { some: { id: userId } } },
+    });
+    const upcomingDeadlines = await prisma.task.findMany({
+      where: {
+        class: { students: { some: { id: userId } } },
+        deadline: { gte: new Date() },
+      },
+      orderBy: { deadline: "asc" },
+    });
+    return {
+      role: "STUDENT",
+      userName: user.name,
+      enrolledClasses,
+      upcomingDeadlines,
+    };
+  }
 
+  // Jika rolenya USER atau UNREGISTERED
+  return { role: user.role };
+}
+
+export default async function ClassroomDashboardPage() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/api/auth/signin");
+  }
+
+  const data = await getDashboardData(session.user.id);
+
+  if (!data) return notFound();
+
+  // === INI BAGIAN PENTINGNYA ===
+  // Jika user belum jadi STUDENT atau MENTOR, arahkan ke pilihan divisi
+  if (data.role === "USER" || data.role === "UNREGISTERED") {
+    return <DivisionSelection />;
+  }
+
+  // Jika sudah, tampilkan dashboard yang sesuai
   return (
     <div className="space-y-8">
-      {/* Header Section */}
       <div className="space-y-2">
         <h1 className="text-2xl font-bold text-white tracking-tight">
           Selamat Datang Kembali, {data.userName}
         </h1>
         <p className="text-[#9CA3AF] text-sm">
-          {data.role === "mentor"
+          {data.role === "MENTOR"
             ? "Kelola kelas dan pantau progress siswa Anda"
             : "Lanjutkan perjalanan belajar Anda hari ini"}
         </p>
       </div>
-
-      {/* KONDISIONAL RENDER BERDASARKAN ROLE */}
-      {data.role === "mentor" ? (
+      {data.role === "MENTOR" ? (
         <MentorDashboard data={data} />
       ) : (
         <UserDashboard data={data} />
       )}
     </div>
   );
-};
+}
 
-// ===================================
-//       KOMPONEN UNTUK DASHBOARD
-// ===================================
+// ... Komponen MentorDashboard dan UserDashboard tetap sama, tapi sekarang akan menerima data dinamis ...
 
 // Tampilan Dashboard untuk MENTOR
 const MentorDashboard = ({ data }: { data: any }) => (
@@ -222,5 +200,3 @@ const UserDashboard = ({ data }: { data: any }) => (
     </div>
   </div>
 );
-
-export default ClassroomDashboardPage;

@@ -42,9 +42,9 @@ export default function ImageGallery({
           src={images[0]}
           alt="Post image"
           fill
-          className="object-cover"
+          className="object-cover bg-black/50"
           // TAMBAHKAN BARIS INI:
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          sizes="(max-width: 768px) 80vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
     );

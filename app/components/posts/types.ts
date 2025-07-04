@@ -4,7 +4,7 @@ export interface Author {
   id: string;
   name: string;
   username: string; // Changed from nickname to username
-  avatarUrl: string;
+  image?: string;
 }
 
 export interface Project {

@@ -16,7 +16,7 @@ model User {
   email               String?             @unique
   emailVerified       DateTime?
   image               String?
-  role                UserRole            @default(USER)
+  role                UserRole            @default(UNREGISTERED)
   bio                 String?
   jobTitle            String?
   company             String?
@@ -59,6 +59,172 @@ model User {
   skillAreas          SkillArea[]
   workExperiences     WorkExperience[]
   professionalSkills  ProfessionalSkill[]
+  enrollments Enrollment[]
+    taughtClasses Class[] @relation("TaughtClasses")
+  // Kelas yang diikuti (sebagai Student)
+  enrolledClasses Class[] @relation("EnrolledClasses")
+  // Tugas yang dikumpulkan
+  submissions Submission[]
+  following Follow[] @relation("Following")
+  followers Follow[] @relation("Followers")
+}
+
+// BARU: Model untuk soal-soal tes pendaftaran
+model OnboardingTest {
+  id          String   @id @default(cuid())
+  name        String   // Misal: "Tes Dasar Web Development"
+  
+  // RELASI
+  division    Division @relation(fields: [divisionId], references: [id])
+  divisionId  String   @unique // Satu divisi hanya punya satu tes pendaftaran
+
+  questions   Question[]
+}
+
+// BARU: Model untuk setiap pertanyaan dalam tes
+model Question {
+  id            String       @id @default(cuid())
+  text          String       @db.Text
+  type          QuestionType // MULTIPLE_CHOICE atau ESSAY
+  
+  // Untuk pilihan ganda, simpan pilihan jawaban dalam format JSON
+  // Contoh: { "a": "HTML", "b": "CSS", "c": "JavaScript" }
+  options       Json?
+  correctAnswer String?      // Kunci jawaban untuk pilihan ganda (misal: "c")
+  
+  // RELASI
+  test          OnboardingTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+  testId        String
+  
+  answers       Answer[]
+
+  @@index([testId])
+}
+
+// BARU: Model untuk jawaban yang diberikan user
+model Answer {
+  id           String    @id @default(cuid())
+  
+  // Jawaban dari user
+  content      String    @db.Text 
+  isCorrect    Boolean?  // Untuk pilihan ganda, diisi oleh sistem
+  
+  // Penilaian manual dari mentor (untuk esai)
+  essayScore   Int?      // Skor esai (misal: 0-100)
+  essayFeedback String?  @db.Text
+  
+  // RELASI
+  question     Question   @relation(fields: [questionId], references: [id])
+  questionId   String
+  
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  enrollmentId String
+
+  @@unique([questionId, enrollmentId]) // User hanya bisa menjawab satu pertanyaan sekali per pendaftaran
+  @@index([enrollmentId])
+}
+
+// BARU: Model untuk Kelas/Mata Pelajaran di dalam Divisi
+model Class {
+  id          String   @id @default(cuid())
+  name        String   // "Belajar Next.js dari Dasar"
+  slug        String   @unique
+  description String?  @db.Text
+  
+  // RELASI
+  division    Division @relation(fields: [divisionId], references: [id])
+  divisionId  String
+  
+  mentor      User     @relation("TaughtClasses", fields: [mentorId], references: [id])
+  mentorId    String
+
+  students    User[]   @relation("EnrolledClasses")
+  tasks       Task[]
+
+  @@index([divisionId])
+  @@index([mentorId])
+}
+
+// BARU: Model untuk Tugas
+model Task {
+  id          String   @id @default(cuid())
+  name        String   // "Membuat Landing Page"
+  description String?  @db.Text
+  deadline    DateTime
+  
+  // RELASI
+  class       Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classId     String
+  submissions Submission[]
+
+  @@index([classId])
+}
+
+// BARU: Model untuk Pengumpulan Tugas oleh Siswa
+model Submission {
+  id          String    @id @default(cuid())
+  submittedAt DateTime  @default(now())
+  content     String?   @db.Text // Bisa link ke repo, file, dll.
+  grade       Int?
+  feedback    String?   @db.Text
+  isReviewed  Boolean   @default(false)
+  
+  // RELASI
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId      String
+  student     User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId   String
+
+  @@unique([taskId, studentId])
+  @@index([taskId])
+  @@index([studentId])
+}
+
+// BARU: Model untuk Divisi Pembelajaran
+model Division {
+  id          String   @id @default(cuid())
+  name        String   @unique // "Web Development", "Mobile Development", "IoT", "Cybersecurity"
+  description String   @db.Text
+  icon        String?
+  onboardingTest OnboardingTest?
+  classes Class[]
+  // Relasi
+  enrollments Enrollment[]
+  // Nanti bisa relasi ke materi, kelas, dll.
+}
+
+// BARU: Model untuk merekam pendaftaran user ke sebuah divisi
+model Enrollment {
+  id              String   @id @default(cuid())
+  enrollmentDate  DateTime @default(now())
+  status          EnrollmentStatus @default(PENDING) // PENDING, PASSED, FAILED, AWAITING_REVIEW
+  
+  // Skor akhir dari tes
+  testScore       Int?     
+  
+  // RELASI
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  division        Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  divisionId      String
+  
+  answers         Answer[] // Semua jawaban user untuk pendaftaran ini
+
+  @@unique([userId, divisionId])
+  @@index([userId])
+  @@index([divisionId])
+}
+
+model Follow {
+  followerId String
+  followingId String
+
+  follower  User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
 }
 
 model Post {
@@ -428,6 +594,8 @@ enum UserRole {
   ADMIN
   MENTOR
   USER
+  STUDENT
+  UNREGISTERED
 }
 
 enum AchievementRarity {
@@ -493,4 +661,16 @@ enum PostType {
   TEXT
   PHOTO
   PROJECT
+}
+
+enum EnrollmentStatus {
+  PENDING         // User belum/sedang mengerjakan tes
+  AWAITING_REVIEW // User sudah submit, menunggu review esai dari mentor
+  PASSED          // Diterima
+  FAILED          // Ditolak
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  ESSAY
 }

@@ -130,7 +130,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onClose }) => {
               <input
                 type="text"
                 placeholder="Find a repository..."
-                className="w-full bg-gray-900 border border-gray-700 rounded-md py-1.5 pl-3 pr-8 text-sm text-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full bg-gray-900 border border-gray-700 rounded-md py-1.5 pl-3 pr-8 text-sm text-gray-300 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 outline-none"
               />
               <Search
                 size={16}

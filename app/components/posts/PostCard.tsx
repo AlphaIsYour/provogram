@@ -23,10 +23,19 @@ export default function PostCard({ post }: PostCardProps) {
         return <TextPostContent content={post.textContent || ""} />;
       case "PROJECT":
         if (!post.project) return null;
-        return <ProjectPostContent project={post.project} />;
+        return (
+          <ProjectPostContent project={post.project} caption={post.caption} />
+        );
       default:
         return null;
     }
+  };
+
+  const cardStyle = {
+    maxWidth:
+      typeof window !== "undefined" && window.innerWidth < 768
+        ? "calc(100vw - 1rem)"
+        : "154vh",
   };
 
   // Format timestamp for display
@@ -46,9 +55,15 @@ export default function PostCard({ post }: PostCardProps) {
   };
 
   return (
-    <div className="bg-gray-950 rounded-xl mt-3 w-full max-w-4xl mx-auto border border-gray-700">
+    <div
+      className="bg-gray-950 rounded-xl mt-3 mb-2 mx-auto border border-gray-700 w-full"
+      style={cardStyle}
+    >
       <PostHeader
-        author={post.author}
+        author={{
+          ...post.author,
+          image: post.author.image || "",
+        }}
         timestamp={formatTimestamp(post.createdAt)}
       />
       {renderContent()}
