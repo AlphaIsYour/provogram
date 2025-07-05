@@ -143,7 +143,7 @@ export default function WorkExperienceManager({
         <input type="hidden" name="id" value={experience.id} />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Company *
@@ -153,7 +153,7 @@ export default function WorkExperienceManager({
             name="company"
             defaultValue={experience?.company}
             required
-            className="w-full px-3 py-2 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2.5 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             placeholder="Company name"
           />
         </div>
@@ -167,7 +167,7 @@ export default function WorkExperienceManager({
             name="position"
             defaultValue={experience?.position}
             required
-            className="w-full px-3 py-2 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2.5 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             placeholder="Job title"
           />
         </div>
@@ -180,7 +180,7 @@ export default function WorkExperienceManager({
             name="type"
             defaultValue={experience?.type || "FULL_TIME"}
             required
-            className="w-full px-3 py-2 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2.5 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           >
             {Object.entries(workTypeLabels).map(([value, label]) => (
               <option key={value} value={value}>
@@ -198,7 +198,7 @@ export default function WorkExperienceManager({
             type="text"
             name="location"
             defaultValue={experience?.location}
-            className="w-full px-3 py-2 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2.5 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             placeholder="City, Country"
           />
         </div>
@@ -216,7 +216,7 @@ export default function WorkExperienceManager({
                 : ""
             }
             required
-            className="w-full px-3 py-2 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2.5 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           />
         </div>
 
@@ -232,7 +232,7 @@ export default function WorkExperienceManager({
                 ? new Date(experience.endDate).toISOString().split("T")[0]
                 : ""
             }
-            className="w-full px-3 py-2 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2.5 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           />
           <p className="text-xs text-gray-500 mt-1">
             Leave empty if currently working
@@ -248,7 +248,7 @@ export default function WorkExperienceManager({
           type="url"
           name="logoUrl"
           defaultValue={experience?.logoUrl}
-          className="w-full px-3 py-2 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2.5 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           placeholder="https://example.com/logo.png"
         />
       </div>
@@ -261,7 +261,7 @@ export default function WorkExperienceManager({
           name="description"
           defaultValue={experience?.description}
           rows={3}
-          className="w-full px-3 py-2 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2.5 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
           placeholder="Brief description of your role and responsibilities..."
         />
       </div>
@@ -274,7 +274,7 @@ export default function WorkExperienceManager({
           name="achievements"
           defaultValue={experience?.achievements?.join("\n")}
           rows={4}
-          className="w-full px-3 py-2 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2.5 bg-[#0D1117] border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
           placeholder="• Achievement 1&#10;• Achievement 2&#10;• Achievement 3"
         />
         <p className="text-xs text-gray-500 mt-1">
@@ -282,21 +282,21 @@ export default function WorkExperienceManager({
         </p>
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
         <button
           type="button"
           onClick={() => {
             setIsAddingNew(false);
             setEditingId(null);
           }}
-          className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+          className="px-4 py-2.5 text-gray-400 hover:text-white transition-colors text-sm order-2 sm:order-1"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={loading === (isEdit ? editingId : "adding")}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center"
+          className="px-4 py-2.5 bg-blue-700 border border-gray-700 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center text-sm order-1 sm:order-2"
         >
           {loading === (isEdit ? editingId : "adding") ? (
             <>
@@ -317,16 +317,16 @@ export default function WorkExperienceManager({
   return (
     <div
       id="experience"
-      className="bg-[#161B22] rounded-lg p-6 border border-gray-800"
+      className="bg-[#161B22] rounded-lg p-4 sm:p-6 border border-gray-800"
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
         <div className="flex items-center">
-          <Briefcase className="w-5 h-5 text-blue-400 mr-2" />
-          <h2 className="text-xl font-semibold">Work Experience</h2>
+          <Briefcase className="w-5 h-5 text-blue-400 mr-2 flex-shrink-0" />
+          <h2 className="text-lg sm:text-xl font-semibold">Work Experience</h2>
         </div>
         <button
           onClick={() => setIsAddingNew(true)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center"
+          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center justify-center text-sm"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Experience
@@ -335,7 +335,7 @@ export default function WorkExperienceManager({
 
       {message && (
         <div
-          className={`p-3 rounded-lg mb-4 ${
+          className={`p-3 rounded-lg mb-4 text-sm ${
             message.type === "success"
               ? "bg-green-900/30 text-green-400 border border-green-700"
               : "bg-red-900/30 text-red-400 border border-red-700"
@@ -346,8 +346,10 @@ export default function WorkExperienceManager({
       )}
 
       {isAddingNew && (
-        <div className="bg-[#0D1117] rounded-lg p-6 border border-gray-700 mb-6">
-          <h3 className="text-lg font-medium mb-4">Add New Work Experience</h3>
+        <div className="bg-[#0D1117] rounded-lg p-4 sm:p-6 border border-gray-700 mb-4 sm:mb-6">
+          <h3 className="text-base sm:text-lg font-medium mb-4">
+            Add New Work Experience
+          </h3>
           <WorkExperienceForm />
         </div>
       )}
@@ -365,63 +367,69 @@ export default function WorkExperienceManager({
           workExperiences.map((experience) => (
             <div
               key={experience.id}
-              className="bg-[#0D1117] rounded-lg p-6 border border-gray-700"
+              className="bg-[#0D1117] rounded-lg p-4 sm:p-6 border border-gray-700"
             >
               {editingId === experience.id ? (
                 <div>
-                  <h3 className="text-lg font-medium mb-4">
+                  <h3 className="text-base sm:text-lg font-medium mb-4">
                     Edit Work Experience
                   </h3>
                   <WorkExperienceForm experience={experience} isEdit={true} />
                 </div>
               ) : (
                 <div>
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 space-y-3 sm:space-y-0">
+                    <div className="flex items-start">
                       {experience.logoUrl && (
                         <img
                           src={experience.logoUrl}
                           alt={`${experience.company} logo`}
-                          className="w-12 h-12 rounded-lg mr-4 object-cover"
+                          className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg mr-3 sm:mr-4 object-cover flex-shrink-0"
                           onError={(e) => {
                             e.currentTarget.style.display = "none";
                           }}
                         />
                       )}
-                      <div>
-                        <h3 className="text-lg font-semibold text-white">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg font-semibold text-white leading-tight">
                           {experience.position}
                         </h3>
-                        <div className="flex items-center text-gray-400 mb-2">
-                          <Building className="w-4 h-4 mr-1" />
-                          <span className="mr-4">{experience.company}</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center text-gray-400 mb-2 space-y-1 sm:space-y-0">
+                          <div className="flex items-center">
+                            <Building className="w-4 h-4 mr-1 flex-shrink-0" />
+                            <span className="text-sm">
+                              {experience.company}
+                            </span>
+                          </div>
                           <span
-                            className={`px-2 py-1 rounded-full text-xs border ${
+                            className={`px-2 py-1 rounded-full text-xs border w-fit mt-1 sm:mt-0 sm:ml-3 ${
                               workTypeColors[experience.type]
                             }`}
                           >
                             {workTypeLabels[experience.type]}
                           </span>
                         </div>
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Calendar className="w-4 h-4 mr-1" />
-                          <span>
-                            {formatDate(experience.startDate)} -{" "}
-                            {experience.endDate
-                              ? formatDate(experience.endDate)
-                              : "Present"}
-                          </span>
+                        <div className="flex flex-col sm:flex-row sm:items-center text-xs sm:text-sm text-gray-500 space-y-1 sm:space-y-0">
+                          <div className="flex items-center">
+                            <Calendar className="w-4 h-4 mr-1 flex-shrink-0" />
+                            <span>
+                              {formatDate(experience.startDate)} -{" "}
+                              {experience.endDate
+                                ? formatDate(experience.endDate)
+                                : "Present"}
+                            </span>
+                          </div>
                           {experience.location && (
-                            <>
-                              <span className="mx-2">•</span>
-                              <MapPin className="w-4 h-4 mr-1" />
+                            <div className="flex items-center">
+                              <span className="hidden sm:inline mx-2">•</span>
+                              <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
                               <span>{experience.location}</span>
-                            </>
+                            </div>
                           )}
                         </div>
                       </div>
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 flex-shrink-0">
                       <button
                         onClick={() => setEditingId(experience.id)}
                         className="p-2 text-gray-400 hover:text-blue-400 transition-colors"
@@ -445,7 +453,7 @@ export default function WorkExperienceManager({
                   </div>
 
                   {experience.description && (
-                    <p className="text-gray-300 mb-4">
+                    <p className="text-gray-300 mb-4 text-sm leading-relaxed">
                       {experience.description}
                     </p>
                   )}
@@ -456,9 +464,9 @@ export default function WorkExperienceManager({
                         <h4 className="text-sm font-medium text-gray-400 mb-2">
                           Key Achievements:
                         </h4>
-                        <ul className="list-disc list-inside space-y-1 text-gray-300">
+                        <ul className="list-disc list-inside space-y-1 text-gray-300 pl-2">
                           {experience.achievements.map((achievement, index) => (
-                            <li key={index} className="text-sm">
+                            <li key={index} className="text-sm leading-relaxed">
                               {achievement}
                             </li>
                           ))}

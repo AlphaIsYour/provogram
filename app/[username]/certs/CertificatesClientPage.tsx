@@ -145,7 +145,7 @@ export default function CertificatesClientPage({
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5 flex-wrap gap-4">
+      <div className="flex items-center justify-between mb-5">
         <div className="flex items-center space-x-4">
           <Link
             href={`/${user.username}`}
@@ -154,22 +154,24 @@ export default function CertificatesClientPage({
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold flex items-center">
+            <h1 className="text-[18px] sm:text[18px] font-bold flex items-center">
               <GraduationCap className="w-6 h-6 mr-2 text-blue-400" />
               Certificates & Credentials
             </h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-gray-400 text-[10px] sm:text-[14px] mt-1">
               {user.name}&apos;s professional certifications and learning
               achievements
             </p>
           </div>
         </div>
-        <div className="bg-[#161B22] p-2 rounded-lg border border-gray-800">
+        <div className="bg-[#161B22] w-[13vh] p-2 rounded-lg border border-gray-800">
           <div className="text-center">
-            <div className="text-xl font-bold text-green-400">
+            <div className="text-[18px] sm:text[18px] font-bold text-green-400">
               {certStats.totalCertificates}
             </div>
-            <div className="text-sm text-gray-400">Total Certificates</div>
+            <div className="text-[10px] sm:text-[14px] text-gray-400">
+              Total Certificates
+            </div>
           </div>
         </div>
       </div>
@@ -189,40 +191,42 @@ export default function CertificatesClientPage({
               <h2 className="text-lg font-bold">{user.name}</h2>
               <p className="text-gray-400">@{user.username}</p>
             </div>
-            <div className="space-y-4">
-              <div className="bg-[#0D1117] p-4 rounded-lg">
+            <div className="space-y-2 grid grid-cols-2 sm:grid-cols-1 gap-2">
+              <div className="bg-[#0D1117] h-[12vh] p-4 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-gray-400">Verified</span>
                   <BadgeCheck className="w-4 h-4 text-green-400" />
                 </div>
-                <div className="text-2xl font-bold text-green-400">
+                <div className="text-xl font-bold text-green-400">
                   {certStats.verifiedCertificates}
                 </div>
               </div>
-              <div className="bg-[#0D1117] p-4 rounded-lg">
+              <div className="bg-[#0D1117] h-[12vh] p-4 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-gray-400">Active</span>
                   <CheckCircle2 className="w-4 h-4 text-blue-400" />
                 </div>
-                <div className="text-2xl font-bold text-blue-400">
+                <div className="text-xl font-bold text-blue-400">
                   {certStats.activeCertificates}
                 </div>
               </div>
-              <div className="bg-[#0D1117] p-4 rounded-lg">
+              <div className="bg-[#0D1117] h-[12vh] p-4 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-gray-400">Expiring Soon</span>
+                  <span className="text-[13px] sm:text-[14px] text-gray-400">
+                    Expiring Soon
+                  </span>
                   <Clock className="w-4 h-4 text-yellow-400" />
                 </div>
-                <div className="text-2xl font-bold text-yellow-400">
+                <div className="text-xl font-bold text-yellow-400">
                   {certStats.expiringSoon}
                 </div>
               </div>
-              <div className="bg-[#0D1117] p-4 rounded-lg">
+              <div className="bg-[#0D1117] h-[12vh] p-4 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-gray-400">Skill Hours</span>
                   <BookOpen className="w-4 h-4 text-purple-400" />
                 </div>
-                <div className="text-2xl font-bold text-purple-400">
+                <div className="text-xl font-bold text-purple-400">
                   {certStats.totalSkillHours}h
                 </div>
               </div>

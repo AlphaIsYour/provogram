@@ -32,7 +32,7 @@ function NavigationItem({
   const baseClasses =
     "flex items-center px-3 py-2 rounded-lg mb-1 cursor-pointer";
   const activeClasses = isActive
-    ? "text-white bg-orange-300/20 border-l-4 border-orange-400"
+    ? "text-white bg-blue-300/20 border-l-4 border-blue-400"
     : "text-gray-300 hover:text-white hover:bg-[#0D1117]";
   const dangerClasses = isDanger
     ? "text-red-400 hover:text-red-300 hover:bg-red-900/20 bg-red-900/20"

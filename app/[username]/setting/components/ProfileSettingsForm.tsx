@@ -36,7 +36,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors flex items-center"
+      className="w-full sm:w-auto bg-blue-700 border border-gray-700 hover:bg-blue-600 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center text-sm sm:text-base"
     >
       <Save className="w-4 h-4 mr-2" />
       {pending ? "Saving..." : "Save Changes"}
@@ -50,7 +50,7 @@ function FormMessage({ state }: { state: any }) {
 
   if (state.success) {
     return (
-      <div className="mb-4 p-3 bg-green-900/30 text-green-400 border border-green-700 rounded-lg">
+      <div className="mb-4 p-3 bg-green-900/30 text-green-400 border border-green-700 rounded-lg text-sm">
         {state.message}
       </div>
     );
@@ -58,7 +58,7 @@ function FormMessage({ state }: { state: any }) {
 
   if (!state.success && state.error) {
     return (
-      <div className="mb-4 p-3 bg-red-900/30 text-red-400 border border-red-700 rounded-lg">
+      <div className="mb-4 p-3 bg-red-900/30 text-red-400 border border-red-700 rounded-lg text-sm">
         {state.error}
       </div>
     );
@@ -99,7 +99,7 @@ function InputField({
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-2 items-center">
+      <label className="text-sm font-medium mb-2 flex items-center">
         {Icon && <Icon className="w-4 h-4 mr-2 text-gray-400" />}
         {label}
         {required && <span className="text-red-400 ml-1">*</span>}
@@ -118,7 +118,7 @@ function InputField({
           errors && errors.length > 0
             ? "border-red-500 focus:border-red-400"
             : "border-gray-700 focus:border-blue-500"
-        } rounded-lg px-4 py-3 text-white focus:outline-none transition-colors resize-none ${
+        } rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-white focus:outline-none transition-colors resize-none text-sm sm:text-base ${
           disabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
       />
@@ -193,7 +193,7 @@ function URLField({
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-2 items-center">
+      <label className="text-sm font-medium mb-2 flex items-center">
         {Icon && <Icon className="w-4 h-4 mr-2 text-gray-400" />}
         {label}
       </label>
@@ -210,7 +210,7 @@ function URLField({
             : errors && errors.length > 0
             ? "border-red-500 focus:border-red-400"
             : "border-gray-700 focus:border-blue-500"
-        } rounded-lg px-4 py-3 text-white focus:outline-none transition-colors`}
+        } rounded-lg px-3 py-2 sm:px-4 sm:py-3 text-white focus:outline-none transition-colors text-sm sm:text-base`}
       />
       {!isValid && url && (
         <p className="text-red-400 text-xs mt-1">Please enter a valid URL</p>
@@ -319,238 +319,232 @@ export default function ProfileSettingsForm({ user }: { user: UserType }) {
   const errors = state?.details || {};
 
   return (
-    <form ref={formRef} action={formAction}>
-      <section
-        id="profile"
-        className="bg-[#161B22] rounded-lg p-6 border border-gray-800 "
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-          <h2 className="text-xl font-semibold flex items-center">
-            <User className="w-5 h-5 mr-2" />
-            Profile Information
-          </h2>
-          <SubmitButton />
-        </div>
+    <form ref={formRef} action={formAction} className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-lg sm:text-xl font-semibold flex items-center">
+          <User className="w-5 h-5 mr-2" />
+          Profile Information
+        </h2>
+        <SubmitButton />
+      </div>
 
-        <FormMessage state={state} />
+      <FormMessage state={state} />
 
-        {/* Avatar Section */}
-        <div className="mb-8">
-          <label className="block text-sm font-medium mb-3">
-            Profile Picture
-          </label>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <div className="relative">
-              <Image
-                src={imagePreview || user.image || "/default-avatar.png"}
-                alt={user.name || "User"}
-                width={100}
-                height={100}
-                className="w-24 h-24 rounded-full object-cover border-2 border-gray-700"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/default-avatar.png";
-                }}
+      {/* Avatar Section */}
+      <div className="space-y-4">
+        <label className="block text-sm font-medium">Profile Picture</label>
+        <div className="flex flex-col items-center sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="relative">
+            <Image
+              src={imagePreview || user.image || "/default-avatar.png"}
+              alt={user.name || "User"}
+              width={80}
+              height={80}
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-gray-700"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "/default-avatar.png";
+              }}
+            />
+            {isImageUploading && (
+              <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+                <div className="animate-spin rounded-full h-4 w-4 sm:h-6 sm:w-6 border-b-2 border-white"></div>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <label className="bg-[#0D1117] hover:bg-gray-800 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg border border-gray-700 transition-colors cursor-pointer flex items-center justify-center text-sm">
+              <Upload className="w-4 h-4 mr-2" />
+              Upload New
+              <input
+                ref={fileInputRef}
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+                disabled={isImageUploading}
               />
-              {isImageUploading && (
-                <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <label className="bg-[#0D1117] hover:bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-700 transition-colors cursor-pointer flex items-center">
-                <Upload className="w-4 h-4 mr-2" />
-                Upload New
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                  disabled={isImageUploading}
-                />
-              </label>
-              {imagePreview && (
-                <button
-                  type="button"
-                  onClick={removeImagePreview}
-                  className="bg-red-900/30 hover:bg-red-900/50 text-red-400 px-4 py-2 rounded-lg border border-red-700 transition-colors flex items-center"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Remove
-                </button>
-              )}
-            </div>
-          </div>
-          {errors.image && (
-            <p className="text-red-400 text-xs mt-2">{errors.image[0]}</p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Basic Information */}
-          <div className="space-y-4">
-            <InputField
-              label="Full Name"
-              name="name"
-              defaultValue={user.name}
-              placeholder="Enter your full name"
-              icon={User}
-              errors={errors.name}
-              required
-              maxLength={100}
-            />
-
-            <InputField
-              label="Username"
-              name="username"
-              defaultValue={user.username}
-              placeholder="Enter your username"
-              icon={User}
-              errors={errors.username}
-              required
-              maxLength={50}
-              pattern="^[a-zA-Z0-9_-]+$"
-            />
-
-            <InputField
-              label="Email"
-              name="email"
-              type="email"
-              defaultValue={user.email}
-              placeholder="Enter your email address"
-              icon={Mail}
-              errors={errors.email}
-              required
-              disabled
-            />
-
-            <InputField
-              label="Phone Number"
-              name="phone"
-              type="tel"
-              defaultValue={user.phone}
-              placeholder="+62 xxx-xxxx-xxxx"
-              icon={Phone}
-              errors={errors.phone}
-              maxLength={20}
-            />
-
-            <InputField
-              label="Date of Birth"
-              name="dateOfBirth"
-              type="date"
-              defaultValue={formattedDateOfBirth}
-              icon={Calendar}
-              errors={errors.dateOfBirth}
-            />
-          </div>
-
-          {/* Professional Information */}
-          <div className="space-y-4">
-            <InputField
-              label="Job Title"
-              name="jobTitle"
-              defaultValue={user.jobTitle}
-              placeholder="e.g. Software Developer"
-              icon={Briefcase}
-              errors={errors.jobTitle}
-              maxLength={100}
-            />
-
-            <InputField
-              label="Company"
-              name="company"
-              defaultValue={user.company}
-              placeholder="Enter your company name"
-              icon={Building}
-              errors={errors.company}
-              maxLength={100}
-            />
-
-            <InputField
-              label="Location"
-              name="location"
-              defaultValue={user.location}
-              placeholder="e.g. Jakarta, Indonesia"
-              icon={MapPin}
-              errors={errors.location}
-              maxLength={100}
-            />
-
-            <InputField
-              label="Timezone"
-              name="timezone"
-              defaultValue={user.timezone}
-              placeholder="e.g. Asia/Jakarta"
-              icon={Clock}
-              errors={errors.timezone}
-              maxLength={50}
-            />
+            </label>
+            {imagePreview && (
+              <button
+                type="button"
+                onClick={removeImagePreview}
+                className="bg-red-900/30 hover:bg-red-900/50 text-red-400 px-3 py-2 sm:px-4 sm:py-2 rounded-lg border border-red-700 transition-colors flex items-center justify-center text-sm"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Remove
+              </button>
+            )}
           </div>
         </div>
+        {errors.image && (
+          <p className="text-red-400 text-xs mt-2">{errors.image[0]}</p>
+        )}
+      </div>
 
-        {/* Bio Section */}
-        <div className="mt-6">
+      {/* Form Fields */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        {/* Basic Information */}
+        <div className="space-y-4">
           <InputField
-            label="Bio"
-            name="bio"
-            defaultValue={user.bio}
-            placeholder="Tell us about yourself..."
-            icon={FileText}
-            errors={errors.bio}
-            rows={4}
-            maxLength={500}
+            label="Full Name"
+            name="name"
+            defaultValue={user.name}
+            placeholder="Enter your full name"
+            icon={User}
+            errors={errors.name}
+            required
+            maxLength={100}
+          />
+
+          <InputField
+            label="Username"
+            name="username"
+            defaultValue={user.username}
+            placeholder="Enter your username"
+            icon={User}
+            errors={errors.username}
+            required
+            maxLength={50}
+            pattern="^[a-zA-Z0-9_-]+$"
+          />
+
+          <InputField
+            label="Email"
+            name="email"
+            type="email"
+            defaultValue={user.email}
+            placeholder="Enter your email address"
+            icon={Mail}
+            errors={errors.email}
+            required
+            disabled
+          />
+
+          <InputField
+            label="Phone Number"
+            name="phone"
+            type="tel"
+            defaultValue={user.phone}
+            placeholder="+62 xxx-xxxx-xxxx"
+            icon={Phone}
+            errors={errors.phone}
+            maxLength={20}
+          />
+
+          <InputField
+            label="Date of Birth"
+            name="dateOfBirth"
+            type="date"
+            defaultValue={formattedDateOfBirth}
+            icon={Calendar}
+            errors={errors.dateOfBirth}
           />
         </div>
 
-        {/* Social Links Section */}
-        <div className="mt-8">
-          <h3 className="text-lg font-medium mb-4">Social Links</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <URLField
-              label="Website"
-              name="websiteUrl"
-              defaultValue={user.websiteUrl}
-              placeholder="https://yourwebsite.com"
-              icon={Globe}
-              errors={errors.websiteUrl}
-            />
+        {/* Professional Information */}
+        <div className="space-y-4">
+          <InputField
+            label="Job Title"
+            name="jobTitle"
+            defaultValue={user.jobTitle}
+            placeholder="e.g. Software Developer"
+            icon={Briefcase}
+            errors={errors.jobTitle}
+            maxLength={100}
+          />
 
-            <URLField
-              label="GitHub"
-              name="githubUrl"
-              defaultValue={user.githubUrl}
-              placeholder="https://github.com/username"
-              icon={Github}
-              errors={errors.githubUrl}
-            />
+          <InputField
+            label="Company"
+            name="company"
+            defaultValue={user.company}
+            placeholder="Enter your company name"
+            icon={Building}
+            errors={errors.company}
+            maxLength={100}
+          />
 
-            <URLField
-              label="LinkedIn"
-              name="linkedinUrl"
-              defaultValue={user.linkedinUrl}
-              placeholder="https://linkedin.com/in/username"
-              icon={Linkedin}
-              errors={errors.linkedinUrl}
-            />
+          <InputField
+            label="Location"
+            name="location"
+            defaultValue={user.location}
+            placeholder="e.g. Jakarta, Indonesia"
+            icon={MapPin}
+            errors={errors.location}
+            maxLength={100}
+          />
 
-            <URLField
-              label="Twitter"
-              name="twitterUrl"
-              defaultValue={user.twitterUrl}
-              placeholder="https://twitter.com/username"
-              icon={Twitter}
-              errors={errors.twitterUrl}
-            />
-          </div>
+          <InputField
+            label="Timezone"
+            name="timezone"
+            defaultValue={user.timezone}
+            placeholder="e.g. Asia/Jakarta"
+            icon={Clock}
+            errors={errors.timezone}
+            maxLength={50}
+          />
         </div>
+      </div>
 
-        {/* Additional hidden fields for form handling */}
-        <input type="hidden" name="userId" value={user.id} />
-      </section>
+      {/* Bio Section */}
+      <div>
+        <InputField
+          label="Bio"
+          name="bio"
+          defaultValue={user.bio}
+          placeholder="Tell us about yourself..."
+          icon={FileText}
+          errors={errors.bio}
+          rows={4}
+          maxLength={500}
+        />
+      </div>
+
+      {/* Social Links Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Social Links</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <URLField
+            label="Website"
+            name="websiteUrl"
+            defaultValue={user.websiteUrl}
+            placeholder="https://yourwebsite.com"
+            icon={Globe}
+            errors={errors.websiteUrl}
+          />
+
+          <URLField
+            label="GitHub"
+            name="githubUrl"
+            defaultValue={user.githubUrl}
+            placeholder="https://github.com/username"
+            icon={Github}
+            errors={errors.githubUrl}
+          />
+
+          <URLField
+            label="LinkedIn"
+            name="linkedinUrl"
+            defaultValue={user.linkedinUrl}
+            placeholder="https://linkedin.com/in/username"
+            icon={Linkedin}
+            errors={errors.linkedinUrl}
+          />
+
+          <URLField
+            label="Twitter"
+            name="twitterUrl"
+            defaultValue={user.twitterUrl}
+            placeholder="https://twitter.com/username"
+            icon={Twitter}
+            errors={errors.twitterUrl}
+          />
+        </div>
+      </div>
+
+      {/* Additional hidden fields for form handling */}
+      <input type="hidden" name="userId" value={user.id} />
     </form>
   );
 }

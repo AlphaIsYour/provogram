@@ -111,21 +111,21 @@ export default async function AchievementsPage({
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold flex items-center">
+            <h1 className="text-[14px] sm:text[14px] font-bold flex items-center">
               <Trophy className="w-6 h-6 mr-2 text-blue-400" />
               Achievements & Badges
             </h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-gray-400 text-[10px] sm:text-[14px] mt-1">
               Track your learning journey and accomplishments
             </p>
           </div>
         </div>
-        <div className="bg-[#161B22] p-2 rounded-lg border border-gray-800">
+        <div className="bg-[#161B22] w-[16vh] p-2 rounded-lg border border-gray-800">
           <div className="text-center">
-            <div className="text-xl font-bold text-green-400">
+            <div className="text-[18px] sm:text[18px] font-bold text-green-400">
               Level {achievementStats.level}
             </div>
-            <div className="text-sm text-gray-400">
+            <div className="text-[10px] sm:text-[14px] text-gray-400">
               {achievementStats.totalXP} XP Total
             </div>
           </div>

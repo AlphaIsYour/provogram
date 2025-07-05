@@ -111,11 +111,11 @@ export default function EducationManager({
     <form
       ref={formRef}
       action={(formData) => handleSubmit(formData, isEdit)}
-      className="space-y-4 bg-[#0D1117] p-4 rounded-lg border border-gray-700"
+      className="space-y-4 bg-[#0D1117] p-3 sm:p-4 rounded-lg border border-gray-700"
     >
       {isEdit && <input type="hidden" name="id" value={education?.id} />}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">
             Institution *
@@ -125,7 +125,7 @@ export default function EducationManager({
             name="institution"
             defaultValue={education?.institution}
             required
-            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="University of California"
           />
         </div>
@@ -137,7 +137,7 @@ export default function EducationManager({
             name="degree"
             defaultValue={education?.degree}
             required
-            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Bachelor of Science"
           />
         </div>
@@ -151,7 +151,7 @@ export default function EducationManager({
             name="fieldOfStudy"
             defaultValue={education?.fieldOfStudy}
             required
-            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Computer Science"
           />
         </div>
@@ -162,7 +162,7 @@ export default function EducationManager({
             type="text"
             name="location"
             defaultValue={education?.location}
-            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Berkeley, CA"
           />
         </div>
@@ -178,7 +178,7 @@ export default function EducationManager({
                 : ""
             }
             required
-            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -192,7 +192,7 @@ export default function EducationManager({
                 ? new Date(education.endDate).toISOString().split("T")[0]
                 : ""
             }
-            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -202,7 +202,7 @@ export default function EducationManager({
             type="text"
             name="gpa"
             defaultValue={education?.gpa}
-            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="3.8/4.0"
           />
         </div>
@@ -213,7 +213,7 @@ export default function EducationManager({
             name="status"
             defaultValue={education?.status || "GRADUATED"}
             required
-            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="GRADUATED">Graduated</option>
             <option value="IN_PROGRESS">In Progress</option>
@@ -227,7 +227,7 @@ export default function EducationManager({
           type="url"
           name="logoUrl"
           defaultValue={education?.logoUrl}
-          className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="https://university.edu/logo.png"
         />
       </div>
@@ -238,19 +238,19 @@ export default function EducationManager({
           name="description"
           defaultValue={education?.description}
           rows={3}
-          className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-[#161B22] border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           placeholder="Additional details about your education..."
         />
       </div>
 
-      <div className="flex justify-end space-x-2 pt-4">
+      <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
         <button
           type="button"
           onClick={() => {
             setIsAddingEducation(false);
             setEditingEducation(null);
           }}
-          className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+          className="w-full sm:w-auto px-4 py-2 text-gray-400 hover:text-white transition-colors rounded-lg border border-gray-700 hover:border-gray-600"
         >
           <X className="w-4 h-4 mr-1 inline" />
           Cancel
@@ -258,7 +258,7 @@ export default function EducationManager({
         <button
           type="submit"
           disabled={isPending}
-          className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
+          className="w-full sm:w-auto bg-blue-700 border border-gray-700 hover:bg-blue-600 disabled:opacity-50 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center"
         >
           <Save className="w-4 h-4 mr-1" />
           {isPending ? "Saving..." : isEdit ? "Update" : "Add"} Education
@@ -270,16 +270,16 @@ export default function EducationManager({
   return (
     <div
       id="education"
-      className="bg-[#161B22] rounded-lg p-6 border border-gray-800"
+      className="bg-[#161B22] rounded-lg p-4 sm:p-6 border border-gray-800"
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-3 sm:space-y-0">
         <div className="flex items-center">
           <GraduationCap className="w-5 h-5 text-blue-400 mr-2" />
           <h2 className="text-xl font-semibold">Education</h2>
         </div>
         <button
           onClick={() => setIsAddingEducation(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center text-sm"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center text-sm"
         >
           <Plus className="w-4 h-4 mr-1" />
           Add Education
@@ -288,18 +288,18 @@ export default function EducationManager({
 
       {message && (
         <div
-          className={`mb-4 p-3 rounded-lg flex items-center ${
+          className={`mb-4 p-3 rounded-lg flex items-start ${
             message.type === "success"
               ? "bg-green-900/30 border border-green-700 text-green-300"
               : "bg-red-900/30 border border-red-700 text-red-300"
           }`}
         >
           {message.type === "success" ? (
-            <CheckCircle className="w-4 h-4 mr-2" />
+            <CheckCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 mr-2" />
+            <AlertCircle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
           )}
-          {message.text}
+          <span className="text-sm">{message.text}</span>
         </div>
       )}
 
@@ -314,8 +314,8 @@ export default function EducationManager({
         {educations.length === 0 ? (
           <div className="text-center py-8 text-gray-400">
             <GraduationCap className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No education records found</p>
-            <p className="text-sm">
+            <p className="text-base">No education records found</p>
+            <p className="text-sm mt-1">
               Add your educational background to get started
             </p>
           </div>
@@ -328,23 +328,25 @@ export default function EducationManager({
               {editingEducation === education.id ? (
                 <EducationForm education={education} isEdit={true} />
               ) : (
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-start space-x-3">
+                    <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0 sm:space-x-3">
                       {education.logoUrl && (
-                        <img
-                          src={education.logoUrl}
-                          alt={`${education.institution} logo`}
-                          className="w-12 h-12 rounded-lg object-cover"
-                        />
+                        <div className="flex justify-center sm:justify-start">
+                          <img
+                            src={education.logoUrl}
+                            alt={`${education.institution} logo`}
+                            className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                          />
+                        </div>
                       )}
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h3 className="font-semibold text-lg">
+                      <div className="flex-1 text-center sm:text-left">
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-2">
+                          <h3 className="font-semibold text-base sm:text-lg">
                             {education.degree}
                           </h3>
                           <span
-                            className={`px-2 py-1 rounded-full text-xs ${
+                            className={`inline-block px-2 py-1 rounded-full text-xs ${
                               education.status === "GRADUATED"
                                 ? "bg-green-900/30 text-green-300"
                                 : "bg-blue-900/30 text-blue-300"
@@ -356,21 +358,23 @@ export default function EducationManager({
                           </span>
                         </div>
 
-                        <div className="flex items-center text-blue-400 mb-2">
-                          <Building className="w-4 h-4 mr-1" />
-                          <span className="font-medium">
+                        <div className="flex items-center justify-center sm:justify-start text-blue-400 mb-2">
+                          <Building className="w-4 h-4 mr-1 flex-shrink-0" />
+                          <span className="font-medium text-sm">
                             {education.institution}
                           </span>
                         </div>
 
-                        <div className="flex items-center text-gray-400 mb-2">
-                          <BookOpen className="w-4 h-4 mr-1" />
-                          <span>{education.fieldOfStudy}</span>
+                        <div className="flex items-center justify-center sm:justify-start text-gray-400 mb-2">
+                          <BookOpen className="w-4 h-4 mr-1 flex-shrink-0" />
+                          <span className="text-sm">
+                            {education.fieldOfStudy}
+                          </span>
                         </div>
 
-                        <div className="flex items-center space-x-4 text-sm text-gray-400 mb-2">
-                          <div className="flex items-center">
-                            <Calendar className="w-4 h-4 mr-1" />
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-gray-400 mb-2">
+                          <div className="flex items-center justify-center sm:justify-start">
+                            <Calendar className="w-4 h-4 mr-1 flex-shrink-0" />
                             <span>
                               {formatDate(education.startDate)} -{" "}
                               {education.endDate
@@ -380,22 +384,22 @@ export default function EducationManager({
                           </div>
 
                           {education.location && (
-                            <div className="flex items-center">
-                              <MapPin className="w-4 h-4 mr-1" />
+                            <div className="flex items-center justify-center sm:justify-start">
+                              <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
                               <span>{education.location}</span>
                             </div>
                           )}
 
                           {education.gpa && (
-                            <div className="flex items-center">
-                              <Award className="w-4 h-4 mr-1" />
+                            <div className="flex items-center justify-center sm:justify-start">
+                              <Award className="w-4 h-4 mr-1 flex-shrink-0" />
                               <span>GPA: {education.gpa}</span>
                             </div>
                           )}
                         </div>
 
                         {education.description && (
-                          <p className="text-gray-300 text-sm mt-2">
+                          <p className="text-gray-300 text-sm mt-2 text-center sm:text-left">
                             {education.description}
                           </p>
                         )}
@@ -403,7 +407,7 @@ export default function EducationManager({
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2 ml-4">
+                  <div className="flex items-center justify-center sm:justify-end space-x-2 mt-4 sm:mt-0 sm:ml-4">
                     <button
                       onClick={() => setEditingEducation(education.id)}
                       className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-900/20 rounded-lg transition-colors"

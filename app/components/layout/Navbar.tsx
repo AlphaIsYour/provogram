@@ -200,13 +200,13 @@ const Navbar = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                  <div className="w-full h-full bg-gradient-to-br from-gray-500 to-orange-500 flex items-center justify-center">
                     <User size={20} className="text-white" />
                   </div>
                 )}
 
                 {/* Fallback avatar jika image gagal load */}
-                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 items-center justify-center hidden">
+                <div className="w-full h-full bg-gradient-to-br from-gray-500 to-orange-500 items-center justify-center hidden">
                   <User size={20} className="text-white" />
                 </div>
               </div>

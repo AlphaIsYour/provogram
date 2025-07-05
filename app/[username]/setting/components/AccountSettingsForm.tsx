@@ -181,7 +181,7 @@ export default function AccountSettingsForm({
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg transition-colors flex items-center"
+            className="bg-blue-700 border border-gray-700 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg transition-colors flex items-center"
           >
             {isLoading ? (
               <>

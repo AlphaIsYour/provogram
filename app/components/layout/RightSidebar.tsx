@@ -1,6 +1,7 @@
+// app/components/layout/RightSidebar.tsx
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   X,
   Book,
@@ -10,21 +11,21 @@ import {
   Github,
   Settings,
   LogOut,
-  Trophy, // Tambahkan Trophy untuk leaderboard
-  // ChartBar, // Tidak perlu ChartBar lagi
-  // Hapus import yang tidak digunakan untuk membersihkan kode
-  // Building, Briefcase, Heart, Rocket, Globe, LifeBuoy, Users
+  Trophy,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image"; // Tambahkan import Image dari Next.js
+import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import CompleteProfileModal from "./CompleteProfileModal";
+import { completeUserProfile } from "@/app/actions/UserActions";
 
+// Add interface for props
 interface RightSidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Komponen NavItem sudah perfect, tidak perlu diubah
 const NavItem = ({
   icon,
   children,
@@ -47,7 +48,11 @@ const NavItem = ({
 );
 
 const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
-  const { data: session, status } = useSession();
+  const { data: session, status, update: updateSession } = useSession();
+  const router = useRouter();
+
+  // State untuk mengontrol modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -60,12 +65,39 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  // Handle loading state: Tampilkan versi skeleton/placeholder yang simpel saat data belum siap
+  const handleProfileClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Cek apakah user sudah punya username
+    if (session?.user?.username) {
+      // Jika sudah punya, biarkan Link berjalan normal dan tutup sidebar
+      onClose();
+    } else {
+      // Jika tidak punya, cegah Link berjalan dan buka modal
+      e.preventDefault();
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleSaveProfile = async (username: string) => {
+    const result = await completeUserProfile(username);
+    if (result.success) {
+      // Jika sukses, update sesi dan redirect
+      await updateSession({ user: { username } }); // Update sesi di client
+      setIsModalOpen(false);
+      onClose(); // Tutup sidebar
+      router.push(`/${username}`); // Arahkan ke halaman profil baru
+    }
+    return result;
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
   const isLoading = status === "loading";
 
   return (
     <>
-      {/* Overlay (tidak berubah) */}
+      {/* Sidebar Backdrop */}
       <div
         onClick={onClose}
         className={`fixed inset-0 bg-black/60 z-40 transition-opacity duration-300 ${
@@ -127,21 +159,20 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          {/* ========================================= */}
-          {/* BAGIAN LINK PROFIL YANG DIPERBAIKI */}
-          {/* ========================================= */}
           <nav className="flex flex-col gap-0.5 px-1.5">
-            {/* Tampilkan link hanya jika user sudah login dan punya username */}
-            {status === "authenticated" && session.user?.username && (
+            {/* Profile Navigation */}
+            {status === "authenticated" && (
               <NavItem
                 icon={<User size={16} className="text-gray-400" />}
-                href={`/${session.user.username}`}
-                onClick={onClose} // Menutup sidebar saat link profil diklik
+                href={
+                  session?.user?.username ? `/${session.user.username}` : "#"
+                } // Arahkan ke # jika username kosong
+                onClick={handleProfileClick} // Gunakan handler custom
               >
                 Your profile
               </NavItem>
             )}
-            {/* NavItem lainnya bisa kamu sesuaikan/hapus sesuai kebutuhan */}
+
             <NavItem
               icon={<Book size={16} className="text-gray-400" />}
               href="/classroom"
@@ -177,9 +208,6 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
           </nav>
         </div>
 
-        {/* ========================================= */}
-        {/* BAGIAN LOGOUT YANG DIPERBAIKI */}
-        {/* ========================================= */}
         <div className="mt-auto pt-2 border-t border-gray-800 flex-shrink-0 px-1.5">
           {/* Tampilkan tombol logout hanya jika user sudah login */}
           {status === "authenticated" && (
@@ -197,6 +225,13 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ isOpen, onClose }) => {
           )}
         </div>
       </div>
+
+      {/* MODAL UNTUK MELENGKAPI PROFIL - SEKARANG DI LUAR SIDEBAR */}
+      <CompleteProfileModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onSave={handleSaveProfile}
+      />
     </>
   );
 };

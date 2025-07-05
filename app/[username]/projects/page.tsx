@@ -95,7 +95,7 @@ export default async function ProjectsPage({
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8 sm:space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -106,28 +106,32 @@ export default async function ProjectsPage({
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold flex items-center">
+            <h1 className="text-[18px] sm:text[18px] font-bold flex items-center">
               <Code className="w-6 h-6 mr-2 text-blue-400" />
               Projects Portfolio
             </h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-gray-400 text-[10px] sm:text-[14px] mt-1">
               Showcase of my development work and contributions
             </p>
           </div>
         </div>
-        <div className="bg-[#161B22] p-2 rounded-lg border border-gray-800">
+        <div className="bg-[#161B22] p-2 w-[13vh] rounded-lg border border-gray-800">
           <div className="text-center">
-            <div className="text-xl font-bold text-blue-400">{stats.total}</div>
-            <div className="text-sm text-gray-400">Total Projects</div>
+            <div className="text-[18px] sm:text-[18px] font-bold text-blue-400">
+              {stats.total}
+            </div>
+            <div className="text-[10px] sm:text-[14px] text-gray-400">
+              Total Projects
+            </div>
           </div>
         </div>
       </div>
 
       {/* Project Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+      <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-4">
         <div className="bg-gradient-to-r from-blue-900/50 to-blue-800/50 p-4 rounded-lg border border-blue-800/30">
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-400">
+            <div className="text-lg sm:text-2xl font-bold text-blue-400">
               {stats.total}
             </div>
             <div className="text-sm text-blue-300">Total</div>
@@ -135,7 +139,7 @@ export default async function ProjectsPage({
         </div>
         <div className="bg-gradient-to-r from-green-900/50 to-green-800/50 p-4 rounded-lg border border-green-800/30">
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-400">
+            <div className="text-lg sm:text-2xl font-bold text-green-400">
               {stats.active}
             </div>
             <div className="text-sm text-green-300">Active</div>
@@ -143,7 +147,7 @@ export default async function ProjectsPage({
         </div>
         <div className="bg-gradient-to-r from-purple-900/50 to-purple-800/50 p-4 rounded-lg border border-purple-800/30">
           <div className="text-center">
-            <div className="text-2xl font-bold text-purple-400">
+            <div className="text-lg sm:text-2xl font-bold text-purple-400">
               {stats.completed}
             </div>
             <div className="text-sm text-purple-300">Completed</div>
@@ -151,7 +155,7 @@ export default async function ProjectsPage({
         </div>
         <div className="bg-gradient-to-r from-yellow-900/50 to-yellow-800/50 p-4 rounded-lg border border-yellow-800/30">
           <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-400">
+            <div className="text-lg sm:text-2xl font-bold text-yellow-400">
               {stats.totalStars}
             </div>
             <div className="text-sm text-yellow-300">Total Stars</div>
@@ -159,7 +163,7 @@ export default async function ProjectsPage({
         </div>
         <div className="bg-gradient-to-r from-pink-900/50 to-pink-800/50 p-4 rounded-lg border border-pink-800/30">
           <div className="text-center">
-            <div className="text-2xl font-bold text-pink-400">
+            <div className="text-lg sm:text-2xl font-bold text-pink-400">
               {stats.totalViews}
             </div>
             <div className="text-sm text-pink-300">Total Views</div>
@@ -167,7 +171,7 @@ export default async function ProjectsPage({
         </div>
         <div className="bg-gradient-to-r from-orange-900/50 to-orange-800/50 p-4 rounded-lg border border-orange-800/30">
           <div className="text-center">
-            <div className="text-2xl font-bold text-orange-400">
+            <div className="text-lg sm:text-2xl font-bold text-orange-400">
               {stats.featured}
             </div>
             <div className="text-sm text-orange-300">Featured</div>

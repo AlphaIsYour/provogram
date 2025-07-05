@@ -222,7 +222,7 @@ export default function CreatePost({ onPostCreated }: CreatePostProps) {
       <div className="px-4 py-3">
         <form onSubmit={handleSubmit} className="flex items-start space-x-4">
           <Image
-            src={session?.user?.image || "/default-avatar.png"}
+            src={session?.user?.image || "/avatar-placeholder.png"}
             alt={session?.user?.name || "User Avatar"}
             width={40}
             height={40}

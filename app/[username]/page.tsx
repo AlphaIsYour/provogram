@@ -192,7 +192,7 @@ export default async function ProfilePage({
             </div>
 
             {/* Info */}
-            <div className="space-y-3 mb-6 text-sm">
+            <div className="space-y-3 mb-6 text-[14px] sm:text-[8px]">
               {user.jobTitle && (
                 <div className="flex items-center text-gray-300">
                   <Building className="w-4 h-4 mr-2" />
@@ -273,15 +273,17 @@ export default async function ProfilePage({
           {/* Welcome Message & Stats */}
           <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 rounded-lg p-6 border border-blue-800/30">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold flex items-center">
+              <h2 className="text-[18px] sm:text-[18px] font-bold flex items-center">
                 <Zap className="w-5 h-5 mr-2 text-yellow-400" />
                 Learning Journey
               </h2>
               <div className="text-right">
-                <div className="text-xl font-bold text-blue-400">
+                <div className="text-[18px] sm:text-[18px] font-bold text-blue-400">
                   {learningStats.totalLearningHours}h
                 </div>
-                <div className="text-sm text-gray-400">Total Learning Time</div>
+                <div className="text-[10px] sm:text-[10px] text-gray-400">
+                  Total Learning Time
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -318,7 +320,7 @@ export default async function ProfilePage({
 
           {/* Recent Activity */}
           <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <h2 className="text-[18px] sm:text-[18px] font-semibold mb-4 flex items-center">
               <TrendingUp className="w-5 h-5 mr-2" />
               Recent Activity
             </h2>
@@ -357,7 +359,7 @@ export default async function ProfilePage({
           {/* Skill Badges */}
           <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold flex items-center">
+              <h2 className="text-[18px] sm:text-[18px] font-semibold flex items-center">
                 <Medal className="w-5 h-5 mr-2" />
                 Skill Badges
               </h2>
@@ -392,7 +394,7 @@ export default async function ProfilePage({
 
           {/* Learning Goals */}
           <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <h2 className="text-[18px] sm:text-[18px] font-semibold mb-4 flex items-center">
               <Target className="w-5 h-5 mr-2" />
               Current Learning Goals
             </h2>
@@ -427,7 +429,7 @@ export default async function ProfilePage({
           {/* Featured Projects */}
           <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold flex items-center">
+              <h2 className="text-[18px] sm:text-[18px] font-semibold flex items-center">
                 <Star className="w-5 h-5 mr-2" />
                 Featured Projects
               </h2>
@@ -438,11 +440,12 @@ export default async function ProfilePage({
                 View all projects →
               </Link>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Mobile: Horizontal scroll, Desktop: Grid */}
+            <div className="flex overflow-x-auto space-x-4 pb-4 md:grid md:grid-cols-2 md:gap-6 md:space-x-0 md:overflow-visible md:pb-0">
               {user.projects.map((project) => (
                 <div
                   key={project.id}
-                  className="bg-[#0D1117] border border-gray-700 rounded-lg overflow-hidden hover:border-gray-600 transition-all hover:scale-105 duration-200"
+                  className="bg-[#0D1117] border border-gray-700 rounded-lg overflow-hidden hover:border-gray-600 flex-shrink-0 w-80 md:w-auto md:flex-shrink"
                 >
                   <div className="h-40 bg-gradient-to-br from-blue-900/50 to-purple-900/50 flex items-center justify-center">
                     <Code className="w-12 h-12 text-gray-400" />

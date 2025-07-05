@@ -9,11 +9,12 @@ import {
   ArrowLeft,
   Code2,
   Database,
+  Code,
+  Brain,
+  Globe,
   Palette,
   Server,
   Smartphone,
-  Globe,
-  Brain,
   Trophy,
   TrendingUp,
   Star,
@@ -46,6 +47,9 @@ const iconMap: { [key: string]: React.ComponentType<any> } = {
   Server,
   Database,
   Cloud,
+  Code,
+  Brain,
+  Globe,
   Palette,
   Smartphone,
   Trophy,
@@ -133,7 +137,7 @@ export default async function SkillsPage({
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8 sm:space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -144,21 +148,23 @@ export default async function SkillsPage({
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-xl font-bold flex items-center">
+            <h1 className="text-[18px] sm:text[18px] font-bold flex items-center">
               <Brain className="w-6 h-6 mr-2 text-blue-400" />
               Skills & Expertise
             </h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-gray-400 text-[10px] sm:text-[14px] mt-1">
               Technical skills, achievements, and learning progress
             </p>
           </div>
         </div>
-        <div className="bg-[#161B22] p-2 rounded-lg border border-gray-800">
+        <div className="bg-[#161B22] w-[13vh] p-2 rounded-lg border border-gray-800">
           <div className="text-center">
-            <div className="text-xl font-bold text-green-400">
+            <div className="text-[18px] sm:text-[18px] font-bold text-green-400">
               {skillStats.averageLevel}
             </div>
-            <div className="text-sm text-gray-400">Skill Level</div>
+            <div className="text-[10px] sm:text-[14px] text-gray-400">
+              Skill Level
+            </div>
           </div>
         </div>
       </div>
@@ -269,7 +275,7 @@ export default async function SkillsPage({
 
       {/* Skill Progress Goals */}
       <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-        <h2 className="text-xl font-semibold mb-4 flex items-center">
+        <h2 className="text-[18px] sm:text-[18px] font-semibold mb-4 flex items-center">
           <TrendingUp className="w-5 h-5 mr-2" /> Learning Progress & Goals
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -308,7 +314,7 @@ export default async function SkillsPage({
       {/* Achievements & Certifications */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
+          <h2 className="text-[18px] sm:text-[18px] font-semibold mb-4 flex items-center">
             <Trophy className="w-5 h-5 mr-2" /> Recent Achievements
           </h2>
           <div className="space-y-4">
@@ -321,7 +327,13 @@ export default async function SkillsPage({
                 >
                   <div className="flex items-start">
                     <div className="p-2 bg-gray-800 rounded-lg mr-4">
-                      <IconComponent className="w-5 h-5 text-yellow-400" />
+                      {achievement.icon &&
+                      typeof achievement.icon === "string" &&
+                      achievement.icon.length <= 2 ? (
+                        <span className="text-lg">{achievement.icon}</span>
+                      ) : (
+                        <IconComponent className="w-5 h-5 text-yellow-400" />
+                      )}
                     </div>
                     <div className="flex-1">
                       <h3 className="font-semibold mb-1">{achievement.name}</h3>
@@ -340,31 +352,36 @@ export default async function SkillsPage({
           </div>
         </div>
         <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
+          <h2 className="text-[18px] sm:text-[18px] font-semibold mb-4 flex items-center">
             <Award className="w-5 h-5 mr-2" /> Certifications
           </h2>
           <div className="space-y-4">
-            {user.certificates.map((cert) => (
-              <div key={cert.id} className="bg-[#0D1117] p-4 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <span className="text-lg mr-3">{cert.icon || "🎓"}</span>
-                    <div>
-                      <h3 className="font-semibold">{cert.title}</h3>
-                      <p className="text-gray-400 text-sm">{cert.issuer}</p>
+            {user.certificates.map((cert) => {
+              const IconComponent = getIconComponent(cert.icon);
+              return (
+                <div key={cert.id} className="bg-[#0D1117] p-4 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="p-2 bg-gray-800 rounded-lg mr-3">
+                        <IconComponent className="w-5 h-5 text-yellow-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{cert.title}</h3>
+                        <p className="text-gray-400 text-sm">{cert.issuer}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-semibold text-green-400">
-                      Active
-                    </div>
-                    <div className="text-xs text-gray-400">
-                      {cert.completionDate.getFullYear()}
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-green-400">
+                        Active
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {cert.completionDate.getFullYear()}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

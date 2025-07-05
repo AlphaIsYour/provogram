@@ -22,18 +22,18 @@ import SettingsNavigation from "./components/SettingsNavigation"; // Client comp
 // Loading skeleton components
 function SettingsSkeletonLoader() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8">
       {[1, 2, 3, 4, 5, 6].map((i) => (
         <div
           key={i}
-          className="bg-[#161B22] rounded-lg p-6 border border-gray-800"
+          className="bg-[#161B22] rounded-lg p-4 sm:p-6 border border-gray-800"
         >
           <div className="animate-pulse">
-            <div className="h-6 bg-gray-700 rounded w-1/4 mb-4"></div>
-            <div className="space-y-3">
-              <div className="h-4 bg-gray-700 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-700 rounded w-1/2"></div>
-              <div className="h-4 bg-gray-700 rounded w-2/3"></div>
+            <div className="h-5 sm:h-6 bg-gray-700 rounded w-1/4 mb-3 sm:mb-4"></div>
+            <div className="space-y-2 sm:space-y-3">
+              <div className="h-3 sm:h-4 bg-gray-700 rounded w-3/4"></div>
+              <div className="h-3 sm:h-4 bg-gray-700 rounded w-1/2"></div>
+              <div className="h-3 sm:h-4 bg-gray-700 rounded w-2/3"></div>
             </div>
           </div>
         </div>
@@ -45,19 +45,19 @@ function SettingsSkeletonLoader() {
 // Error display component
 function ServerErrorDisplay({ error }: { error: Error }) {
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="bg-red-900/30 border border-red-700 rounded-lg p-6 text-center">
-        <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-        <h2 className="text-xl font-bold text-red-400 mb-2">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6">
+      <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 sm:p-6 text-center">
+        <AlertTriangle className="w-10 h-10 sm:w-12 sm:h-12 text-red-400 mx-auto mb-3 sm:mb-4" />
+        <h2 className="text-lg sm:text-xl font-bold text-red-400 mb-2">
           Something went wrong
         </h2>
-        <p className="text-red-300 mb-4">
+        <p className="text-sm sm:text-base text-red-300 mb-4">
           {error.message ||
             "An unexpected error occurred while loading the settings page."}
         </p>
         <Link
           href="/dashboard"
-          className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+          className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm sm:text-base"
         >
           Go to Dashboard
         </Link>
@@ -69,14 +69,14 @@ function ServerErrorDisplay({ error }: { error: Error }) {
 // Settings content component with proper section IDs and classes
 async function SettingsContent({ user }: { user: any }) {
   return (
-    <div className="lg:col-span-3 space-y-8 -mt-[3.5vh]">
+    <div className="w-full space-y-4 sm:space-y-6 lg:space-y-8">
       {/* Profile Settings */}
       <section
         id="profile"
         className="settings-section settings-content-section"
       >
-        <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-          <h2 className="text-xl font-bold mb-4 flex items-center">
+        <div className="bg-[#161B22] rounded-lg p-4 sm:p-6 border border-gray-800">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center">
             Profile Settings
           </h2>
           <Suspense fallback={<SettingsSkeletonLoader />}>
@@ -90,8 +90,8 @@ async function SettingsContent({ user }: { user: any }) {
         id="account"
         className="settings-section settings-content-section"
       >
-        <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-          <h2 className="text-xl font-bold mb-4 flex items-center">
+        <div className="bg-[#161B22] rounded-lg p-4 sm:p-6 border border-gray-800">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center">
             Account & Security
           </h2>
           <Suspense fallback={<SettingsSkeletonLoader />}>
@@ -105,8 +105,8 @@ async function SettingsContent({ user }: { user: any }) {
         id="privacy"
         className="settings-section settings-content-section"
       >
-        <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-          <h2 className="text-xl font-bold mb-4 flex items-center">
+        <div className="bg-[#161B22] rounded-lg p-4 sm:p-6 border border-gray-800">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center">
             Privacy Settings
           </h2>
           <Suspense fallback={<SettingsSkeletonLoader />}>
@@ -120,8 +120,8 @@ async function SettingsContent({ user }: { user: any }) {
         id="experience"
         className="settings-section settings-content-section"
       >
-        <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-          <h2 className="text-xl font-bold mb-4 flex items-center">
+        <div className="bg-[#161B22] rounded-lg p-4 sm:p-6 border border-gray-800">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center">
             Work Experience
           </h2>
           <Suspense fallback={<SettingsSkeletonLoader />}>
@@ -138,8 +138,8 @@ async function SettingsContent({ user }: { user: any }) {
         id="education"
         className="settings-section settings-content-section"
       >
-        <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-          <h2 className="text-xl font-bold mb-4 flex items-center">
+        <div className="bg-[#161B22] rounded-lg p-4 sm:p-6 border border-gray-800">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center">
             Education
           </h2>
           <Suspense fallback={<SettingsSkeletonLoader />}>
@@ -156,8 +156,8 @@ async function SettingsContent({ user }: { user: any }) {
         id="danger"
         className="settings-section settings-content-section"
       >
-        <div className="bg-red-900/20 border border-red-700 rounded-lg p-6">
-          <h2 className="text-xl font-bold mb-4 flex items-center text-red-400">
+        <div className="bg-gray-900/20 border border-gray-700 rounded-lg p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center text-gray-400">
             Danger Zone
           </h2>
           <Suspense fallback={<SettingsSkeletonLoader />}>
@@ -269,33 +269,33 @@ export default async function SettingsPage({
       });
 
       return (
-        <div className="max-w-7xl mx-auto p-6">
-          <div className="bg-red-900/30 border border-red-700 rounded-lg p-6 text-center">
-            <Shield className="w-12 h-12 text-red-400 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-red-400 mb-2">
+        <div className="max-w-7xl mx-auto p-4 sm:p-6">
+          <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 sm:p-6 text-center">
+            <Shield className="w-10 h-10 sm:w-12 sm:h-12 text-red-400 mx-auto mb-3 sm:mb-4" />
+            <h2 className="text-lg sm:text-xl font-bold text-red-400 mb-2">
               Access Denied
             </h2>
-            <p className="text-red-300 mb-4">
+            <p className="text-sm sm:text-base text-red-300 mb-4">
               You can only access your own settings page. You are trying to
               access settings for &quot;{targetUser.username}&quot; but you are
               logged in as &quot;{currentUser.username}&quot;.
             </p>
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4">
               <Link
                 href={`/${currentUser.username}/setting`}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm sm:text-base text-center"
               >
                 Go to Your Settings
               </Link>
               <Link
                 href={`/${username}`}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors text-sm sm:text-base text-center"
               >
                 View {username}&apos;s Profile
               </Link>
               <Link
                 href="/dashboard"
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors text-sm sm:text-base text-center"
               >
                 Go to Dashboard
               </Link>
@@ -308,29 +308,29 @@ export default async function SettingsPage({
     console.log("Settings page - All checks passed, rendering page");
 
     return (
-      <div className="max-w-7xl mx-auto p-4 lg:p-6 min-h-screen">
+      <div className="max-w-7xl  sm:min-w-8xl mx-auto p-4 sm:p-6 lg:p-6 min-h-screen">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-4">
+          <div className="flex items-center space-x-3 sm:space-x-4">
             <Link
               href={`/${username}`}
               className="p-2 bg-[#161B22] hover:bg-[#21262D] rounded-lg border border-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label="Back to profile"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </Link>
             <div>
-              <h1 className="text-xl lg:text-2xl font-bold flex items-center">
-                <Settings className="w-6 h-6 mr-2 text-blue-400" />
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold flex items-center">
+                <Settings className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-blue-400" />
                 Account Settings
               </h1>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-gray-400 text-xs sm:text-sm mt-1">
                 Manage your account settings and preferences
               </p>
             </div>
           </div>
 
-          {/* Quick stats */}
+          {/* Quick stats - Hidden on mobile */}
           <div className="hidden md:flex items-center space-x-4 text-sm text-gray-400">
             <span>{targetUser._count.workExperiences} experiences</span>
             <span>•</span>
@@ -338,16 +338,19 @@ export default async function SettingsPage({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Settings Navigation - Client Component */}
-          <div className="lg:col-span-1">
+        {/* Mobile layout (single column) and Desktop layout (with sidebar) */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          {/* Settings Navigation - Hidden on mobile (below lg breakpoint) */}
+          <div className="hidden lg:block lg:col-span-1">
             <SettingsNavigation />
           </div>
 
-          {/* Settings Content */}
-          <Suspense fallback={<SettingsSkeletonLoader />}>
-            <SettingsContent user={targetUser} />
-          </Suspense>
+          {/* Settings Content - Full width on mobile, 3/4 width on desktop */}
+          <div className="lg:col-span-3">
+            <Suspense fallback={<SettingsSkeletonLoader />}>
+              <SettingsContent user={targetUser} />
+            </Suspense>
+          </div>
         </div>
       </div>
     );

@@ -123,32 +123,54 @@ export default async function DivisionSelection() {
     icon: string | null;
   };
 
+  // 1. Ambil semua divisi dari database
   const divisions: Division[] = await prisma.division.findMany({
     orderBy: { name: "asc" },
   });
 
-  // Get enrollment statistics for each division
-  const divisionStats = await Promise.all(
-    divisions.map(async (division) => {
-      const enrollmentCount = await prisma.enrollment.count({
-        where: {
-          divisionId: division.id,
-          status: "PASSED",
-        },
-      });
+  // 2. Hitung total user di database (Active Members)
+  const totalUsers = await prisma.user.count();
 
-      const totalTests = await prisma.enrollment.count({
-        where: { divisionId: division.id },
-      });
+  // 3. Query statistik enrollment per divisi
+  const enrollmentStats = await prisma.enrollment.groupBy({
+    by: ["divisionId", "status"],
+    _count: {
+      _all: true,
+    },
+  });
 
-      return {
-        ...division,
-        memberCount: enrollmentCount,
-        totalTests,
-        successRate:
-          totalTests > 0 ? Math.round((enrollmentCount / totalTests) * 100) : 0,
-      };
-    })
+  // 4. Proses data statistik menjadi format yang mudah digunakan
+  const divisionStats = divisions.map((division) => {
+    // Hitung user yang PASSED untuk divisi ini
+    const passedCount =
+      enrollmentStats.find(
+        (s) => s.divisionId === division.id && s.status === "PASSED"
+      )?._count._all || 0;
+
+    // Hitung total enrollment untuk divisi ini (semua status)
+    const totalEnrollments = enrollmentStats
+      .filter((s) => s.divisionId === division.id)
+      .reduce((sum, s) => sum + s._count._all, 0);
+
+    // Hitung pass rate
+    const passRate =
+      totalEnrollments > 0
+        ? Math.round((passedCount / totalEnrollments) * 100)
+        : 0;
+
+    return {
+      ...division,
+      memberCount: passedCount, // Member yang sudah PASSED
+      totalEnrollments: totalEnrollments, // Total yang mendaftar
+      passRate: passRate, // Persentase kelulusan
+    };
+  });
+
+  // 5. Hitung statistik total untuk header
+  const totalActiveMembers = totalUsers; // Total user di database
+  const totalTestsCompleted = enrollmentStats.reduce(
+    (acc, stat) => acc + stat._count._all,
+    0
   );
 
   return (
@@ -185,7 +207,7 @@ export default async function DivisionSelection() {
             <Users className="w-6 h-6 text-blue-400" />
           </div>
           <div className="text-2xl font-bold text-white mb-1">
-            {divisionStats.reduce((acc, div) => acc + div.memberCount, 0)}
+            {totalActiveMembers}
           </div>
           <div className="text-sm text-gray-400">Active Members</div>
         </div>
@@ -205,7 +227,7 @@ export default async function DivisionSelection() {
             <BookOpen className="w-6 h-6 text-purple-400" />
           </div>
           <div className="text-2xl font-bold text-white mb-1">
-            {divisionStats.reduce((acc, div) => acc + div.totalTests, 0)}
+            {totalTestsCompleted}
           </div>
           <div className="text-sm text-gray-400">Tests Completed</div>
         </div>
@@ -278,7 +300,7 @@ export default async function DivisionSelection() {
                     </div>
                     <div className="flex items-center space-x-1">
                       <Trophy className="w-4 h-4" />
-                      <span>{division.successRate}% success rate</span>
+                      <span>{division.passRate}% pass rate</span>
                     </div>
                   </div>
                 </div>
@@ -307,18 +329,18 @@ export default async function DivisionSelection() {
                         </div>
                       </div>
 
-                      {/* Success Rate Badge */}
+                      {/* Pass Rate Badge */}
                       <div className="text-right">
                         <div
                           className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            division.successRate >= 80
+                            division.passRate >= 80
                               ? "bg-green-900/30 text-green-400"
-                              : division.successRate >= 60
+                              : division.passRate >= 60
                               ? "bg-yellow-900/30 text-yellow-400"
                               : "bg-red-900/30 text-red-400"
                           }`}
                         >
-                          {division.successRate}% pass rate
+                          {division.passRate}% pass rate
                         </div>
                       </div>
                     </div>
@@ -339,6 +361,10 @@ export default async function DivisionSelection() {
                         <div className="flex items-center space-x-1">
                           <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                           <span>Active</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                          <span>{division.totalEnrollments} applied</span>
                         </div>
                       </div>
                     </div>

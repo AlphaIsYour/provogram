@@ -237,11 +237,11 @@ export default async function ContactPage({
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 rounded-lg p-6 border border-blue-800/30">
-            <h1 className="text-xl font-bold mb-2 flex items-center">
+            <h1 className="text-[18px] sm:text-xl font-bold mb-2 flex items-center">
               <MessageCircle className="w-7 h-7 mr-2 text-blue-400" />
               Let&apos;s Connect!
             </h1>
-            <p className="text-gray-300 text-lg">
+            <p className="text-gray-300 text-[14px] sm:text-lg">
               I&apos;m always excited to discuss new opportunities, collaborate
               on interesting projects, or help fellow developers on their
               journey. Don&apos;t hesitate to reach out!
@@ -255,7 +255,7 @@ export default async function ContactPage({
 
           {/* Bagian Collaboration dan Social Media (TIDAK ADA PERUBAHAN DI SINI) */}
           <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <h2 className="sm:text-lg text-[14px] font-semibold mb-4 flex items-center">
               <Coffee className="w-5 h-5 mr-2" />
               Ways We Can Work Together
             </h2>
@@ -298,7 +298,7 @@ export default async function ContactPage({
           </div>
           {socialLinks.length > 0 && (
             <div className="bg-[#161B22] rounded-lg p-6 border border-gray-800">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <h2 className="sm:text-lg text-[14px] font-semibold mb-4 flex items-center">
                 <Heart className="w-5 h-5 mr-2" />
                 Connect on Social Media
               </h2>
